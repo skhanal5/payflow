@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/scripts/init-dbs.sql:/docker-entrypoint-initdb.d/init-dbs.sql
+  flyway:
+    image: flyway/flyway
+    container_name: flyway
+    depends_on:
+      - db
+    command: >
+      -url=jdbc:postgresql://db:5432/inventory_db -locations=filesystem:/flyway/sql/inventory-db migrate -connectRetries=60
+    environment:
+      FLYWAY_USER: ${DB_USER}
+      FLYWAY_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./db/migrations:/flyway/sql
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    depends_on:
+      - db
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8080:8080
