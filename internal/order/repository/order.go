@@ -19,17 +19,17 @@ type OrderRepository interface {
 }
 
 func DefineGormDSN(host string, user string, password string, port string) string {
-	return fmt.Sprintf("host=%s user=%s password=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", host, user, password, port)	
+	return fmt.Sprintf("host=%s user=%s password=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", host, user, password, port)
 }
 
 func NewOrderDB(cfg config.Config) *OrderDB {
 	dsn := DefineGormDSN(cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBPort)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	
+
 	if err != nil {
 		//TODO: Add error message
 		panic("failed to connect to Order database")
-	}	
+	}
 	return &OrderDB{conn: db}
 }
 
@@ -41,10 +41,10 @@ func (o *OrderDB) InsertOrder(ctx context.Context, order *Order) (*Order, error)
 }
 
 func (o *OrderDB) GetOrder(ctx context.Context, orderID string) (*Order, error) {
-   	var order Order
-    err := o.conn.WithContext(ctx).Model(&Order{}).Preload("CreditCards").Find(&order).Error
+	var order Order
+	err := o.conn.WithContext(ctx).Model(&Order{}).Preload("CreditCards").Find(&order).Error
 	if err != nil {
 		return nil, err
 	}
-    return &order, nil
+	return &order, nil
 }

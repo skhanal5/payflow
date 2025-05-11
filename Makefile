@@ -1,5 +1,8 @@
-.PHONY: clean rund restart migrate ps help
+.PHONY: fmt clean rund restart migrate ps help
 
+fmt: 
+	go fmt ./...
+	
 clean:
 	docker compose down -v
 	docker network prune -f

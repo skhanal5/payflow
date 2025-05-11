@@ -18,11 +18,11 @@ type OrderReader struct {
 
 func NewOrderReader(cfg config.Config) *OrderReader {
 	r := kafkaclient.NewReader(kafkaclient.ReaderConfig{
-		Brokers:   []string{cfg.KafkaBroker},
-		GroupID: cfg.KafkaGroupId,
-		GroupTopics:    []string{cfg.InventoryTopic, cfg.PaymentTopic},
+		Brokers:     []string{cfg.KafkaBroker},
+		GroupID:     cfg.KafkaGroupId,
+		GroupTopics: []string{cfg.InventoryTopic, cfg.PaymentTopic},
 	})
-	return &OrderReader {
+	return &OrderReader{
 		reader: r,
 	}
 }
