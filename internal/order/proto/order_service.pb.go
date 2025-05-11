@@ -75,7 +75,7 @@ func (x *OrderItem) GetQuantity() int32 {
 
 type PlaceOrderRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Product       string                 `protobuf:"bytes,1,opt,name=product,proto3" json:"product,omitempty"`
+	OrderId       string                 `protobuf:"bytes,1,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
 	Items         []*OrderItem           `protobuf:"bytes,2,rep,name=items,proto3" json:"items,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -111,9 +111,9 @@ func (*PlaceOrderRequest) Descriptor() ([]byte, []int) {
 	return file_order_service_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *PlaceOrderRequest) GetProduct() string {
+func (x *PlaceOrderRequest) GetOrderId() string {
 	if x != nil {
-		return x.Product
+		return x.OrderId
 	}
 	return ""
 }
@@ -289,9 +289,9 @@ const file_order_service_proto_rawDesc = "" +
 	"\tOrderItem\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x01 \x01(\tR\tproductId\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x05R\bquantity\"U\n" +
-	"\x11PlaceOrderRequest\x12\x18\n" +
-	"\aproduct\x18\x01 \x01(\tR\aproduct\x12&\n" +
+	"\bquantity\x18\x02 \x01(\x05R\bquantity\"V\n" +
+	"\x11PlaceOrderRequest\x12\x19\n" +
+	"\border_id\x18\x01 \x01(\tR\aorderId\x12&\n" +
 	"\x05items\x18\x02 \x03(\v2\x10.order.OrderItemR\x05items\"B\n" +
 	"\rOrderResponse\x12\x19\n" +
 	"\border_id\x18\x01 \x01(\tR\aorderId\x12\x16\n" +

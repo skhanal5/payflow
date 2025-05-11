@@ -3,7 +3,9 @@ package repository
 import (
 	"context"
 	"fmt"
-    "gorm.io/driver/postgres"
+
+	"github.com/skhanal5/payflow/internal/order/config"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -20,8 +22,8 @@ func DefineGormDSN(host string, user string, password string, port string) strin
 	return fmt.Sprintf("host=%s user=%s password=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", host, user, password, port)	
 }
 
-func NewOrderDB(host string, user string, password string, port string) *OrderDB {
-	dsn := DefineGormDSN(host, user, password, port)
+func NewOrderDB(cfg config.Config) *OrderDB {
+	dsn := DefineGormDSN(cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBPort)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	
 	if err != nil {
