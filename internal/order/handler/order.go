@@ -6,18 +6,26 @@ import (
 	"github.com/skhanal5/payflow/internal/order/kafka"
 	"github.com/skhanal5/payflow/internal/order/proto"
 	"github.com/skhanal5/payflow/internal/order/repository"
-	"google.golang.org/grpc"
 )
 
-type OrderServer struct {
+type OrderHandler struct {
+	proto.UnimplementedOrderServiceServer
 	db       repository.OrderRepository
 	consumer kafka.OrderConsumer
 	producer kafka.OrderProducer
 }
 
-func (s *OrderServer) PlaceOrder(ctx context.Context, in *proto.PlaceOrderRequest, opts ...grpc.CallOption) (*proto.OrderResponse, error) {
+func NewOrderHandler(db repository.OrderRepository, consumer kafka.OrderConsumer, producer kafka.OrderProducer) *OrderHandler {
+	return &OrderHandler{
+		db:       db,
+		consumer: consumer,
+		producer: producer,
+	}
+}
+
+func (h *OrderHandler) PlaceOrder(ctx context.Context, in *proto.PlaceOrderRequest) (*proto.OrderResponse, error) {
 	order := convertToDBItem(in)
-	res, err := s.db.InsertOrder(ctx, &order)
+	res, err := h.db.InsertOrder(ctx, &order)
 	if err != nil {
 		return nil, err
 	}
@@ -27,9 +35,9 @@ func (s *OrderServer) PlaceOrder(ctx context.Context, in *proto.PlaceOrderReques
 	}, nil
 }
 
-func (s *OrderServer) GetOrderStatus(ctx context.Context, in *proto.GetOrderStatusRequest, opts ...grpc.CallOption) (*proto.GetOrderStatusResponse, error) {
+func (h *OrderHandler) GetOrderStatus(ctx context.Context, in *proto.GetOrderStatusRequest) (*proto.GetOrderStatusResponse, error) {
 	id := in.OrderId
-	order, err := s.db.GetOrder(ctx, id)
+	order, err := h.db.GetOrder(ctx, id)
 	if err != nil {
 		return nil, err
 	}

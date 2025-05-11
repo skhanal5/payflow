@@ -10,7 +10,7 @@ import (
 )
 
 type OrderProducer interface {
-	SendOrderFunc(ctx context.Context, order proto.PlaceOrderRequest) error
+	SendOrder(ctx context.Context, order *proto.PlaceOrderRequest) error
 }
 
 type OrderWriter struct {
