@@ -16,7 +16,3 @@ type OrderItem struct {
 	Quantity int `gorm:"not null"`
 	Price float64 `gorm:"not null"`
 }
-
-type OrderStatus struct {
-	ID string
-}

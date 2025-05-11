@@ -10,12 +10,12 @@ import (
 )
 
 type OrderDB struct {
-	db *gorm.DB
+	conn *gorm.DB
 }
 
 type OrderRepository interface {
 	InsertOrder(ctx context.Context, order *Order) (*Order, error)
-	GetOrder(ctx context.Context, orderID string) (*OrderStatus, error)
+	GetOrder(ctx context.Context, orderID string) (*Order, error)
 }
 
 func DefineGormDSN(host string, user string, password string, port string) string {
@@ -30,20 +30,21 @@ func NewOrderDB(cfg config.Config) *OrderDB {
 		//TODO: Add error message
 		panic("failed to connect to Order database")
 	}	
-	return &OrderDB{db: db}
+	return &OrderDB{conn: db}
 }
 
-func (db *OrderDB) InsertOrder(ctx context.Context, order *Order) (*Order, error) {
-	if err := db.db.WithContext(ctx).Create(order).Error; err != nil {
+func (o *OrderDB) InsertOrder(ctx context.Context, order *Order) (*Order, error) {
+	if err := o.conn.WithContext(ctx).Create(order).Error; err != nil {
 		return nil, err
 	}
 	return order, nil
 }
 
-func (db *OrderDB) GetOrder(ctx context.Context, orderID string) (*OrderStatus, error) {
-	var order OrderStatus
-	if err := db.db.WithContext(ctx).Where("order_id = ?", orderID).First(&order).Error; err != nil {
+func (o *OrderDB) GetOrder(ctx context.Context, orderID string) (*Order, error) {
+   	var order Order
+    err := o.conn.WithContext(ctx).Model(&Order{}).Preload("CreditCards").Find(&order).Error
+	if err != nil {
 		return nil, err
 	}
-	return &order, nil
+    return &order, nil
 }
