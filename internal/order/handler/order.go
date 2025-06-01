@@ -50,7 +50,7 @@ func (h *OrderHandler) GetOrderStatus(ctx context.Context, in *proto.GetOrderSta
 }
 
 func convertToDBItem(in *proto.PlaceOrderRequest) repository.Order {
-		items := []repository.OrderItem{}
+	items := []repository.OrderItem{}
 	for _, element := range in.Items {
 		item := repository.OrderItem{
 			OrderId:   in.OrderId,

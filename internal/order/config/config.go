@@ -16,14 +16,14 @@ type Config struct {
 
 func NewConfig() Config {
 	return Config{
-		KafkaBroker: utility.GetEnvOrPanic("KAFKA_BROKER"),
-		KafkaGroupId: utility.GetEnvOrPanic("KAFKA_GROUPID"),
-		OrderTopic: utility.GetEnvOrPanic("ORDER_TOPIC"),
-		PaymentTopic: utility.GetEnvOrPanic("PAYMENT_TOPIC"),
+		KafkaBroker:    utility.GetEnvOrPanic("KAFKA_BROKER"),
+		KafkaGroupId:   utility.GetEnvOrPanic("KAFKA_GROUPID"),
+		OrderTopic:     utility.GetEnvOrPanic("ORDER_TOPIC"),
+		PaymentTopic:   utility.GetEnvOrPanic("PAYMENT_TOPIC"),
 		InventoryTopic: utility.GetEnvOrPanic("INVENTORY_TOPIC"),
-		DBHost: utility.GetEnvOrPanic("DATABASE_HOST"),
-		DBUser: utility.GetEnvOrPanic("DATABASE_USER"),
-		DBPassword: utility.GetEnvOrPanic("DATABASE_PASSWORD"),
-		DBPort: utility.GetEnvOrPanic("DATABASE_PORT"),
+		DBHost:         utility.GetEnvOrPanic("DATABASE_HOST"),
+		DBUser:         utility.GetEnvOrPanic("DATABASE_USER"),
+		DBPassword:     utility.GetEnvOrPanic("DATABASE_PASSWORD"),
+		DBPort:         utility.GetEnvOrPanic("DATABASE_PORT"),
 	}
 }

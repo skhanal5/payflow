@@ -16,7 +16,6 @@ type OrderRepository interface {
 	GetOrder(ctx context.Context, orderID string) (*Order, error)
 }
 
-
 func NewOrderDB(host string, user string, password string, port string) *OrderDB {
 	dsn := utility.DefineGormDSN(host, user, password, port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})

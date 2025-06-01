@@ -12,7 +12,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-
 func main() {
 
 	cfg := config.NewConfig()
