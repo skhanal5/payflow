@@ -3,9 +3,7 @@ package kafka
 import (
 	"context"
 	"fmt"
-
 	kafkaclient "github.com/segmentio/kafka-go"
-	"github.com/skhanal5/payflow/internal/order/config"
 )
 
 type OrderConsumer interface {
@@ -16,11 +14,11 @@ type OrderReader struct {
 	reader *kafkaclient.Reader
 }
 
-func NewOrderReader(cfg config.Config) *OrderReader {
+func NewOrderReader(brokers []string, groupID string, topics []string) *OrderReader {
 	r := kafkaclient.NewReader(kafkaclient.ReaderConfig{
-		Brokers:     []string{cfg.KafkaBroker},
-		GroupID:     cfg.KafkaGroupId,
-		GroupTopics: []string{cfg.InventoryTopic, cfg.PaymentTopic},
+		Brokers:     brokers,
+		GroupID:     groupID,
+		GroupTopics: topics,
 	})
 	return &OrderReader{
 		reader: r,

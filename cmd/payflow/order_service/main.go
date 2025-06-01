@@ -16,8 +16,8 @@ import (
 func main() {
 
 	cfg := config.NewConfig()
-	db := repository.NewOrderDB(cfg)
-	consumer := kafka.NewOrderReader(cfg)
+	db := repository.NewOrderDB(cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBPort)
+	consumer := kafka.NewOrderReader([]string{cfg.KafkaBroker}, cfg.KafkaGroupId, []string{cfg.InventoryTopic, cfg.PaymentTopic})
 	producer := kafka.NewOrderWriter(cfg)
 	orderHandler := handler.NewOrderHandler(db, consumer, producer)
 
