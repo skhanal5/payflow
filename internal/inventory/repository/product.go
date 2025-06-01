@@ -4,36 +4,31 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/skhanal5/payflow/internal/order/config"
+	"github.com/skhanal5/payflow/internal/inventory/utility"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-type ProductDB struct {
+type InventoryRepository interface {
+	UpdateProduct(ctx context.Context, productID string, quantity int32) (*Product, error)
+}
+
+type InventoryDB struct {
 	conn *gorm.DB
 }
 
-type OrderRepository interface {
-	UpdateProduct(ctx context.Context, productID string, quantity int) (*Product, error)
-}
-
-func DefineGormDSN(host string, user string, password string, port string) string {
-	return fmt.Sprintf("host=%s user=%s password=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", host, user, password, port)
-}
-
-func NewProductDB(cfg config.Config) *ProductDB {
-	dsn := DefineGormDSN(cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBPort)
+func NewInventoryDB(host string, user string, password string, port string) *InventoryDB {
+	dsn := utility.DefineGormDSN(host, user, password, port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
 	if err != nil {
 		//TODO: Add error message
-		panic("failed to connect to Order database")
+		panic("failed to connect to Inventory database")
 	}
-	return &ProductDB{conn: db}
+	return &InventoryDB{conn: db}
 }
 
 
-func (p *ProductDB) UpdateProduct(ctx context.Context, productID string, quantity int) (*Product, error) {
+func (p *InventoryDB) UpdateProduct(ctx context.Context, productID string, quantity int) (*Product, error) {
 	err := p.conn.Transaction(func(tx *gorm.DB) error {
 		var product Product
 		err := tx.Model(product).Where("product_id = ?", productID).Error
