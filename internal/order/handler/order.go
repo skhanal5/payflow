@@ -14,7 +14,7 @@ type OrderHandler struct {
 	db       repository.OrderRepository
 	consumer kafka.OrderConsumer
 	producer kafka.OrderProducer
-	logger *zerolog.Logger
+	logger   *zerolog.Logger
 }
 
 func NewOrderHandler(db repository.OrderRepository, consumer kafka.OrderConsumer, producer kafka.OrderProducer, logger *zerolog.Logger) *OrderHandler {
@@ -22,7 +22,7 @@ func NewOrderHandler(db repository.OrderRepository, consumer kafka.OrderConsumer
 		db:       db,
 		consumer: consumer,
 		producer: producer,
-		logger: logger,
+		logger:   logger,
 	}
 }
 

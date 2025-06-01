@@ -12,7 +12,7 @@ type Config struct {
 	DBUser         string
 	DBPassword     string
 	DBPort         string
-	Environment string
+	Environment    string
 }
 
 func NewConfig() Config {
@@ -26,6 +26,6 @@ func NewConfig() Config {
 		DBUser:         utility.GetEnvOrPanic("DATABASE_USER"),
 		DBPassword:     utility.GetEnvOrPanic("DATABASE_PASSWORD"),
 		DBPort:         utility.GetEnvOrPanic("DATABASE_PORT"),
-		Environment: utility.GetEnvOrPanic("ENVIRONMENT"),
+		Environment:    utility.GetEnvOrPanic("ENVIRONMENT"),
 	}
 }
