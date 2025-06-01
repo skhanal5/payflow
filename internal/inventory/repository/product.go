@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/skhanal5/payflow/internal/inventory/utility"
+	"github.com/skhanal5/payflow/internal/utility"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
