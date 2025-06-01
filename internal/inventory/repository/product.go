@@ -28,7 +28,7 @@ func NewInventoryDB(host string, user string, password string, port string) *Inv
 }
 
 
-func (p *InventoryDB) UpdateProduct(ctx context.Context, productID string, quantity int) (*Product, error) {
+func (p *InventoryDB) UpdateProduct(ctx context.Context, productID string, quantity int32) (*Product, error) {
 	err := p.conn.Transaction(func(tx *gorm.DB) error {
 		var product Product
 		err := tx.Model(product).Where("product_id = ?", productID).Error

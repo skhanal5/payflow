@@ -13,7 +13,7 @@ import (
 )
 
 type InventoryManager interface {
-	HandleIncomingOrder(ctx context.Context) error
+	HandleIncomingOrder(ctx context.Context)
 	ReadOrderDetails(ctx context.Context) (*order.PlaceOrderRequest, error)
 	ReserveInventory(ctx context.Context, order *order.PlaceOrderRequest) error
 	EmitFailure(ctx context.Context, order *order.PlaceOrderRequest) error
@@ -47,7 +47,7 @@ func NewInventoryProcessor(
 }
 
 
-func (r *InventoryProcessor) HandleIncomingOrder(ctx context.Context) error {
+func (r *InventoryProcessor) HandleIncomingOrder(ctx context.Context) {
 	for {
 		incomingOrder, err := r.ReadOrderDetails(ctx)
 		orderID := incomingOrder.OrderId
