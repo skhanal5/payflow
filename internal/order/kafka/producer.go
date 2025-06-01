@@ -3,6 +3,7 @@ package kafka
 import (
 	"context"
 
+	"github.com/rs/zerolog"
 	kafkaclient "github.com/segmentio/kafka-go"
 	"github.com/skhanal5/payflow/internal/order/config"
 	"github.com/skhanal5/payflow/internal/order/proto"
@@ -15,9 +16,10 @@ type OrderProducer interface {
 
 type OrderWriter struct {
 	writer *kafkaclient.Writer
+	logger *zerolog.Logger
 }
 
-func NewOrderWriter(cfg config.Config) *OrderWriter {
+func NewOrderWriter(cfg config.Config, logger *zerolog.Logger) *OrderWriter {
 	w := &kafkaclient.Writer{
 		Addr:     kafkaclient.TCP(cfg.KafkaBroker),
 		Topic:    cfg.OrderTopic,
@@ -25,6 +27,7 @@ func NewOrderWriter(cfg config.Config) *OrderWriter {
 	}
 	return &OrderWriter{
 		writer: w,
+		logger: logger,
 	}
 }
 
@@ -32,6 +35,7 @@ func (s *OrderWriter) SendOrder(ctx context.Context, order *proto.PlaceOrderRequ
 	id := order.OrderId
 	value, err := protobuf.Marshal(order)
 	if err != nil {
+		s.logger.Error().Err(err).Msg("Failed to marshal order")
 		return err
 	}
 	message := kafkaclient.Message{

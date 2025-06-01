@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/skhanal5/payflow/internal/inventory/utility"
+	"github.com/skhanal5/payflow/internal/utility"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -27,7 +27,6 @@ func NewInventoryDB(host string, user string, password string, port string) *Inv
 	return &InventoryDB{conn: db}
 }
 
-
 func (p *InventoryDB) UpdateProduct(ctx context.Context, productID string, quantity int32) (*Product, error) {
 	err := p.conn.Transaction(func(tx *gorm.DB) error {
 		var product Product
@@ -35,7 +34,7 @@ func (p *InventoryDB) UpdateProduct(ctx context.Context, productID string, quant
 		if err != nil {
 			return fmt.Errorf("failed to find product %s: %w", productID, err)
 		}
-		if (product.Quantity - quantity < 0) {
+		if product.Quantity-quantity < 0 {
 			return fmt.Errorf("insufficient quantity for product %s", productID)
 		}
 		product.Quantity -= quantity

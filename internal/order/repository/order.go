@@ -2,9 +2,7 @@ package repository
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/skhanal5/payflow/internal/order/config"
+	"github.com/skhanal5/payflow/internal/utility"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -18,12 +16,8 @@ type OrderRepository interface {
 	GetOrder(ctx context.Context, orderID string) (*Order, error)
 }
 
-func DefineGormDSN(host string, user string, password string, port string) string {
-	return fmt.Sprintf("host=%s user=%s password=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", host, user, password, port)
-}
-
-func NewOrderDB(cfg config.Config) *OrderDB {
-	dsn := DefineGormDSN(cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBPort)
+func NewOrderDB(host string, user string, password string, port string) *OrderDB {
+	dsn := utility.DefineGormDSN(host, user, password, port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {

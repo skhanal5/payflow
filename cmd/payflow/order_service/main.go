@@ -9,17 +9,18 @@ import (
 	"github.com/skhanal5/payflow/internal/order/kafka"
 	"github.com/skhanal5/payflow/internal/order/proto"
 	"github.com/skhanal5/payflow/internal/order/repository"
+	"github.com/skhanal5/payflow/internal/utility"
 	"google.golang.org/grpc"
 )
-
 
 func main() {
 
 	cfg := config.NewConfig()
-	db := repository.NewOrderDB(cfg)
-	consumer := kafka.NewOrderReader(cfg)
-	producer := kafka.NewOrderWriter(cfg)
-	orderHandler := handler.NewOrderHandler(db, consumer, producer)
+	logger := utility.InitLogger("order-service", cfg.Environment)
+	db := repository.NewOrderDB(cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBPort)
+	consumer := kafka.NewOrderReader([]string{cfg.KafkaBroker}, cfg.KafkaGroupId, []string{cfg.InventoryTopic, cfg.PaymentTopic}, &logger)
+	producer := kafka.NewOrderWriter(cfg, &logger)
+	orderHandler := handler.NewOrderHandler(db, consumer, producer, &logger)
 
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {

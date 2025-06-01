@@ -21,11 +21,11 @@ type InventoryManager interface {
 
 type InventoryProcessor struct {
 	reservedTopic string
-	failureTopic string
-	reader *kafkaclient.Reader
-	writer *kafkaclient.Writer
-	repo repository.InventoryRepository
-	logger *zerolog.Logger
+	failureTopic  string
+	reader        *kafkaclient.Reader
+	writer        *kafkaclient.Writer
+	repo          repository.InventoryRepository
+	logger        *zerolog.Logger
 }
 
 func NewInventoryProcessor(
@@ -46,7 +46,6 @@ func NewInventoryProcessor(
 	}
 }
 
-
 func (r *InventoryProcessor) HandleIncomingOrder(ctx context.Context) {
 	for {
 		incomingOrder, err := r.ReadOrderDetails(ctx)
@@ -61,7 +60,7 @@ func (r *InventoryProcessor) HandleIncomingOrder(ctx context.Context) {
 			if err != nil {
 				r.logger.Error().Err(err).Msg("Couldn't update product due to inventory or system err")
 				r.EmitFailure(ctx, orderID, item.ProductId, item.Quantity)
-			}	
+			}
 			r.ReserveInventory(ctx, orderID, item.ProductId, item.Quantity)
 		}
 	}
@@ -79,7 +78,6 @@ func (r *InventoryProcessor) ReadOrderDetails(ctx context.Context) (*order.Place
 	}
 	return &order, nil
 }
-
 
 func (s *InventoryProcessor) ReserveInventory(ctx context.Context, orderID string, productID string, quantity int32) error {
 	reservation := &proto.InventoryReserved{
@@ -107,8 +105,8 @@ func (s *InventoryProcessor) EmitFailure(ctx context.Context, orderID string, pr
 		OrderId:   orderID,
 		ProductId: productID,
 		Quantity:  quantity,
-		Status:	proto.InventoryStatus_FAILED,
-		Reason: proto.FailureReason_OUT_OF_STOCK,
+		Status:    proto.InventoryStatus_FAILED,
+		Reason:    proto.FailureReason_OUT_OF_STOCK,
 		Timestamp: time.Now().UnixMilli(),
 	}
 	value, err := protobuf.Marshal(reservation)
