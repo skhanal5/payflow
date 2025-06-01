@@ -1,5 +1,7 @@
 package config
 
+import "github.com/skhanal5/payflow/internal/utility"
+
 type Config struct {
 	KafkaBroker    string
 	KafkaGroupId   string
@@ -14,14 +16,14 @@ type Config struct {
 
 func NewConfig() Config {
 	return Config{
-		KafkaBroker: GetEnvOrPanic("KAFKA_BROKER"),
-		KafkaGroupId: GetEnvOrPanic("KAFKA_GROUPID"),
-		OrderTopic: GetEnvOrPanic("ORDER_TOPIC"),
-		PaymentTopic: GetEnvOrPanic("PAYMENT_TOPIC"),
-		InventoryTopic: GetEnvOrPanic("INVENTORY_TOPIC"),
-		DBHost: GetEnvOrPanic("DATABASE_HOST"),
-		DBUser: GetEnvOrPanic("DATABASE_USER"),
-		DBPassword: GetEnvOrPanic("DATABASE_PASSWORD"),
-		DBPort: GetEnvOrPanic("DATABASE_PORT"),
+		KafkaBroker: utility.GetEnvOrPanic("KAFKA_BROKER"),
+		KafkaGroupId: utility.GetEnvOrPanic("KAFKA_GROUPID"),
+		OrderTopic: utility.GetEnvOrPanic("ORDER_TOPIC"),
+		PaymentTopic: utility.GetEnvOrPanic("PAYMENT_TOPIC"),
+		InventoryTopic: utility.GetEnvOrPanic("INVENTORY_TOPIC"),
+		DBHost: utility.GetEnvOrPanic("DATABASE_HOST"),
+		DBUser: utility.GetEnvOrPanic("DATABASE_USER"),
+		DBPassword: utility.GetEnvOrPanic("DATABASE_PASSWORD"),
+		DBPort: utility.GetEnvOrPanic("DATABASE_PORT"),
 	}
 }
