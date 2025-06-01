@@ -3,6 +3,8 @@ package kafka
 import (
 	"context"
 	"fmt"
+
+	"github.com/rs/zerolog"
 	kafkaclient "github.com/segmentio/kafka-go"
 )
 
@@ -12,9 +14,10 @@ type OrderConsumer interface {
 
 type OrderReader struct {
 	reader *kafkaclient.Reader
+	logger *zerolog.Logger
 }
 
-func NewOrderReader(brokers []string, groupID string, topics []string) *OrderReader {
+func NewOrderReader(brokers []string, groupID string, topics []string, logger *zerolog.Logger) *OrderReader {
 	r := kafkaclient.NewReader(kafkaclient.ReaderConfig{
 		Brokers:     brokers,
 		GroupID:     groupID,
@@ -22,6 +25,7 @@ func NewOrderReader(brokers []string, groupID string, topics []string) *OrderRea
 	})
 	return &OrderReader{
 		reader: r,
+		logger: logger,
 	}
 }
 
@@ -29,6 +33,7 @@ func (r *OrderReader) ReadOrderDetails(ctx context.Context) error {
 	for {
 		message, err := r.reader.ReadMessage(ctx)
 		if err != nil {
+			r.logger.Error().Err(err).Msg("Failed to read message")
 			return err
 		}
 		processMessage(message)

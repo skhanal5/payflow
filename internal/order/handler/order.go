@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/rs/zerolog"
 	"github.com/skhanal5/payflow/internal/order/kafka"
 	"github.com/skhanal5/payflow/internal/order/proto"
 	"github.com/skhanal5/payflow/internal/order/repository"
@@ -13,13 +14,15 @@ type OrderHandler struct {
 	db       repository.OrderRepository
 	consumer kafka.OrderConsumer
 	producer kafka.OrderProducer
+	logger *zerolog.Logger
 }
 
-func NewOrderHandler(db repository.OrderRepository, consumer kafka.OrderConsumer, producer kafka.OrderProducer) *OrderHandler {
+func NewOrderHandler(db repository.OrderRepository, consumer kafka.OrderConsumer, producer kafka.OrderProducer, logger *zerolog.Logger) *OrderHandler {
 	return &OrderHandler{
 		db:       db,
 		consumer: consumer,
 		producer: producer,
+		logger: logger,
 	}
 }
 
@@ -27,6 +30,7 @@ func (h *OrderHandler) PlaceOrder(ctx context.Context, in *proto.PlaceOrderReque
 	order := convertToDBItem(in)
 	res, err := h.db.InsertOrder(ctx, &order)
 	if err != nil {
+		h.logger.Error().Err(err).Msg("Failed to insert order")
 		return nil, err
 	}
 	return &proto.OrderResponse{
@@ -39,6 +43,7 @@ func (h *OrderHandler) GetOrderStatus(ctx context.Context, in *proto.GetOrderSta
 	id := in.OrderId
 	order, err := h.db.GetOrder(ctx, id)
 	if err != nil {
+		h.logger.Error().Err(err).Msg("Failed to get order")
 		return nil, err
 	}
 	items := getResponseItems(order.OrderItems)
