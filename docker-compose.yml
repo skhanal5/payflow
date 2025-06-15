@@ -1,27 +1,26 @@
 services:
-  db:
-    image: postgres
-    container_name: db
+  order-db:
+    image: postgres:15
+    container_name: order-db
     restart: always
     environment:
+      - POSTGRES_DB=order
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - "5432:5432"
     volumes:
-      - ./db/scripts/init-dbs.sql:/docker-entrypoint-initdb.d/init-dbs.sql
-  flyway:
-    image: flyway/flyway
-    container_name: flyway
-    depends_on:
-      - db
-    command: >
-      -url=jdbc:postgresql://db:5432/inventory_db -locations=filesystem:/flyway/sql/inventory-db migrate -connectRetries=60
+      - orders-data:/var/lib/postgresql/data
+      - ./sql/init_order.sql:/docker-entrypoint-initdb.d/init_orders.sql:ro
+  inventory-db:
+    image: postgres:15
+    container_name: inventory-db
+    restart: always
     environment:
-      FLYWAY_USER: ${DB_USER}
-      FLYWAY_PASSWORD: ${DB_PASSWORD}
+      - POSTGRES_DB=inventory
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
-      - ./db/migrations:/flyway/sql
+      - inventory-data:/var/lib/postgresql/data
+      - ./sql/init_inventory.sql:/docker-entrypoint-initdb.d/init_inventory.sql:ro
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -32,7 +31,8 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     depends_on:
-      - db
+      - order-db
+      - inventory-db
   dozzle:
     container_name: dozzle
     image: amir20/dozzle:latest
@@ -40,3 +40,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 8080:8080
+volumes:
+  orders-data:
+  inventory-data:
