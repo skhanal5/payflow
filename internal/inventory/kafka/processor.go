@@ -20,8 +20,7 @@ type InventoryManager interface {
 }
 
 type InventoryProcessor struct {
-	reservedTopic string
-	failureTopic  string
+	checkedTopic string
 	reader        *kafkaclient.Reader
 	writer        *kafkaclient.Writer
 	repo          repository.InventoryRepository
@@ -29,16 +28,14 @@ type InventoryProcessor struct {
 }
 
 func NewInventoryProcessor(
-	reservedTopic string,
-	failureTopic string,
+	checkedTopic string,
 	reader *kafkaclient.Reader,
 	writer *kafkaclient.Writer,
 	repo repository.InventoryRepository,
 	logger *zerolog.Logger,
 ) *InventoryProcessor {
 	return &InventoryProcessor{
-		reservedTopic: reservedTopic,
-		failureTopic:  failureTopic,
+		checkedTopic: checkedTopic,
 		reader:        reader,
 		writer:        writer,
 		repo:          repo,
@@ -93,7 +90,7 @@ func (s *InventoryProcessor) ReserveInventory(ctx context.Context, orderID strin
 		return err
 	}
 	message := kafkaclient.Message{
-		Topic: s.reservedTopic,
+		Topic: s.checkedTopic,
 		Key:   []byte(orderID),
 		Value: value,
 	}
@@ -114,7 +111,7 @@ func (s *InventoryProcessor) EmitFailure(ctx context.Context, orderID string, pr
 		return err
 	}
 	message := kafkaclient.Message{
-		Topic: s.failureTopic,
+		Topic: s.checkedTopic,
 		Key:   []byte(orderID),
 		Value: value,
 	}

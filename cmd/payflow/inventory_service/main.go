@@ -16,7 +16,7 @@ func main() {
 	reader := kafkaclient.NewReader(kafkaclient.ReaderConfig{
 		Brokers: []string{cfg.KafkaBroker},
 		GroupID: cfg.KafkaGroupId,
-		Topic:   cfg.OrderTopic,
+		Topic:   cfg.OrderRequestedTopic,
 	})
 	writer := &kafkaclient.Writer{
 		Addr:     kafkaclient.TCP(cfg.KafkaBroker),
@@ -24,8 +24,7 @@ func main() {
 	}
 	logger := utility.InitLogger("inventory-service", cfg.Environment)
 	processor := kafka.NewInventoryProcessor(
-		cfg.ReservationTopic,
-		cfg.FailureTopic,
+		cfg.InventoryCheckedTopic,
 		reader,
 		writer,
 		db,
