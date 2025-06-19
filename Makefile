@@ -1,4 +1,4 @@
-.PHONY: fmt clean rund restart ps help
+.PHONY: fmt clean rund restart restart-db order-service inventory-service ps help
 
 fmt: 
 	go fmt ./...
@@ -18,6 +18,14 @@ restart:
 restart-db:
 	docker restart order-db
 	docker restart inventory-db
+
+order-service:
+	mkdir -p bin
+	export $$(cat .env | xargs) && go build -o bin/order-service ./cmd/payflow/order_service/main.go
+
+inventory-service:
+	mkdir -p bin
+	export $$(cat .env | xargs) && go build -o bin/inventory-service ./cmd/payflow/inventory_service
 
 ps:
 	docker-compose ps
