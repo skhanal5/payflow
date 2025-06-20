@@ -18,7 +18,7 @@ func main() {
 	cfg := config.NewConfig()
 	logger := utility.InitLogger("order-service", cfg.Environment)
 	db := repository.NewOrderDB(cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBPort)
-	consumer := kafka.NewOrderReader([]string{cfg.KafkaBroker}, cfg.KafkaGroupId, []string{cfg.InventoryTopic, cfg.PaymentTopic}, &logger)
+	consumer := kafka.NewOrderReader([]string{cfg.KafkaBroker}, cfg.KafkaGroupId, []string{cfg.InventoryCheckedTopic, cfg.PaymentTopic}, &logger)
 	producer := kafka.NewOrderWriter(cfg, &logger)
 	orderHandler := handler.NewOrderHandler(db, consumer, producer, &logger)
 
