@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/skhanal5/payflow/internal/utility"
+	"github.com/skhanal5/payflow/internal/shared"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -17,7 +17,7 @@ type OrderRepository interface {
 }
 
 func NewOrderDB(host string, user string, password string, port string) *OrderDB {
-	dsn := utility.DefineGormDSN(host, user, password, port)
+	dsn := shared.DefineGormDSN(host, user, password, port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {

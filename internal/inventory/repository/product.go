@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/skhanal5/payflow/internal/utility"
+	"github.com/skhanal5/payflow/internal/shared"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -18,7 +18,7 @@ type InventoryDB struct {
 }
 
 func NewInventoryDB(host string, user string, password string, port string) *InventoryDB {
-	dsn := utility.DefineGormDSN(host, user, password, port)
+	dsn := shared.DefineGormDSN(host, user, password, port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		//TODO: Add error message

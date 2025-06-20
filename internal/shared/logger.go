@@ -1,4 +1,4 @@
-package utility
+package shared
 
 import (
 	"os"

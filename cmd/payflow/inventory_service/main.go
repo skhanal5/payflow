@@ -7,7 +7,7 @@ import (
 	"github.com/skhanal5/payflow/internal/inventory/config"
 	"github.com/skhanal5/payflow/internal/inventory/kafka"
 	"github.com/skhanal5/payflow/internal/inventory/repository"
-	"github.com/skhanal5/payflow/internal/utility"
+	"github.com/skhanal5/payflow/internal/shared"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 		Addr:     kafkaclient.TCP(cfg.KafkaBroker),
 		Balancer: &kafkaclient.LeastBytes{},
 	}
-	logger := utility.InitLogger("inventory-service", cfg.Environment)
+	logger := shared.InitLogger("inventory-service", cfg.Environment)
 	processor := kafka.NewInventoryProcessor(
 		cfg.InventoryCheckedTopic,
 		reader,

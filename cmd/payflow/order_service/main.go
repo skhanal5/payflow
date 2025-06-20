@@ -9,14 +9,14 @@ import (
 	"github.com/skhanal5/payflow/internal/order/kafka"
 	"github.com/skhanal5/payflow/internal/order/proto"
 	"github.com/skhanal5/payflow/internal/order/repository"
-	"github.com/skhanal5/payflow/internal/utility"
+	"github.com/skhanal5/payflow/internal/shared"
 	"google.golang.org/grpc"
 )
 
 func main() {
 
 	cfg := config.NewConfig()
-	logger := utility.InitLogger("order-service", cfg.Environment)
+	logger := shared.InitLogger("order-service", cfg.Environment)
 	db := repository.NewOrderDB(cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBPort)
 	consumer := kafka.NewOrderReader([]string{cfg.KafkaBroker}, cfg.KafkaGroupId, []string{cfg.InventoryCheckedTopic, cfg.PaymentTopic}, &logger)
 	producer := kafka.NewOrderWriter(cfg, &logger)
