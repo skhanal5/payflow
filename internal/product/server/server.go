@@ -39,28 +39,28 @@ func interceptorLogger(l zerolog.Logger) logging.Logger {
 
 func StartServer(grpcPort string, logger zerolog.Logger, productService *productservice.ProductService) {
 
-    lis, err := net.Listen("tcp", grpcPort)
-    if err != nil {
-        logger.Fatal().Err(err).Msgf("Product Server: Failed to listen on %s", grpcPort)
-    }
+	lis, err := net.Listen("tcp", grpcPort)
+	if err != nil {
+		logger.Fatal().Err(err).Msgf("Product Server: Failed to listen on %s", grpcPort)
+	}
 
 	authZRules := interceptor.NewAuthzRules()
-    opts := []logging.Option{
-        logging.WithLevels(customFunc),
-    }
+	opts := []logging.Option{
+		logging.WithLevels(customFunc),
+	}
 
-    s := grpc.NewServer(
-        grpc.ChainUnaryInterceptor(
-            logging.UnaryServerInterceptor(interceptorLogger(logger), opts...),
+	s := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			logging.UnaryServerInterceptor(interceptorLogger(logger), opts...),
 			interceptor.AuthzInterceptor(logger, authZRules),
-        ),
-    )
+		),
+	)
 
-    pb.RegisterProductServiceServer(s, productService)
-    reflection.Register(s)
+	pb.RegisterProductServiceServer(s, productService)
+	reflection.Register(s)
 
-    logger.Info().Msgf("Product Service (gRPC) listening on %s", grpcPort)
-    if err := s.Serve(lis); err != nil {
-        logger.Fatal().Err(err).Msg("Product Server: Failed to serve gRPC")
-    }
+	logger.Info().Msgf("Product Service (gRPC) listening on %s", grpcPort)
+	if err := s.Serve(lis); err != nil {
+		logger.Fatal().Err(err).Msg("Product Server: Failed to serve gRPC")
+	}
 }

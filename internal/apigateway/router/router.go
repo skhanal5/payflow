@@ -11,12 +11,12 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	productgw "github.com/skhanal5/payflow/gen/go/product"
-	
+
 	"github.com/skhanal5/payflow/internal/apigateway/handler"
 )
 
 func NewRouter(ctx context.Context, logger zerolog.Logger, productAddr string) (http.Handler, error) {
-	gwmux := runtime.NewServeMux() 
+	gwmux := runtime.NewServeMux()
 
 	dialOpts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),

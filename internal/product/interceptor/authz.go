@@ -16,7 +16,7 @@ type AuthzRules map[string][]string
 
 func NewAuthzRules() AuthzRules {
 	return AuthzRules{
-		"/product.ProductService/GetProduct":  {},
+		"/product.ProductService/GetProduct":   {},
 		"/product.ProductService/ListProducts": {},
 	}
 }
