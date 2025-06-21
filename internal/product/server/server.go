@@ -12,6 +12,7 @@ import (
 	"github.com/rs/zerolog"
 
 	pb "github.com/skhanal5/payflow/gen/go/product"
+	"github.com/skhanal5/payflow/internal/product/interceptor"
 	productservice "github.com/skhanal5/payflow/internal/product/service"
 )
 
@@ -43,6 +44,7 @@ func StartServer(grpcPort string, logger zerolog.Logger, productService *product
         logger.Fatal().Err(err).Msgf("Product Server: Failed to listen on %s", grpcPort)
     }
 
+	authZRules := interceptor.NewAuthzRules()
     opts := []logging.Option{
         logging.WithLevels(customFunc),
     }
@@ -50,6 +52,7 @@ func StartServer(grpcPort string, logger zerolog.Logger, productService *product
     s := grpc.NewServer(
         grpc.ChainUnaryInterceptor(
             logging.UnaryServerInterceptor(interceptorLogger(logger), opts...),
+			interceptor.AuthzInterceptor(logger, authZRules),
         ),
     )
 
