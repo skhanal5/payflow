@@ -2,57 +2,62 @@ package server
 
 import (
 	"context"
+	"fmt"
+	"net"
+
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+
+	"github.com/rs/zerolog"
 
 	pb "github.com/skhanal5/payflow/gen/go/product"
-	"github.com/skhanal5/payflow/internal/product/repository"
+	productservice "github.com/skhanal5/payflow/internal/product/service"
 )
 
-type ProductService struct {
-	pb.UnimplementedProductServiceServer
-	repo repository.ProductRepository
+var customFunc = logging.DefaultServerCodeToLevel
+
+func interceptorLogger(l zerolog.Logger) logging.Logger {
+	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
+		l := l.With().Fields(fields).Logger()
+
+		switch lvl {
+		case logging.LevelDebug:
+			l.Debug().Msg(msg)
+		case logging.LevelInfo:
+			l.Info().Msg(msg)
+		case logging.LevelWarn:
+			l.Warn().Msg(msg)
+		case logging.LevelError:
+			l.Error().Msg(msg)
+		default:
+			panic(fmt.Sprintf("unknown level %v", lvl))
+		}
+	})
 }
 
-func NewProductService(repo repository.ProductRepository) *ProductService {
-	return &ProductService{
-		repo: repo,
-	}
-}
+func StartServer(grpcPort string, logger zerolog.Logger, productService *productservice.ProductService) {
 
-func (p *ProductService) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.Product, error) {
-	product, err := p.repo.GetProduct(ctx, req.Id)
-	if err != nil {
-		return nil, err
-	}
-	return &pb.Product{
-		Id: 	 product.ProductID,
-		Name:   product.Name,
-		Description:  product.Description,
-		Price: product.Price,
-		AvailableStock: product.AvailableStock,
-	}, nil
-}
+    lis, err := net.Listen("tcp", grpcPort)
+    if err != nil {
+        logger.Fatal().Err(err).Msgf("Product Server: Failed to listen on %s", grpcPort)
+    }
 
+    opts := []logging.Option{
+        logging.WithLevels(customFunc),
+    }
 
-func (p *ProductService) ListProducts(ctx context.Context, req *pb.ListProductsRequest) (*pb.ListProductsResponse, error) {
-	var category *string
-	if req.Category != "" {
-		category = &req.Category
-	}
-	products, err := p.repo.ListProducts(ctx, category)
-	if err != nil {
-		return nil, err
-	}
+    s := grpc.NewServer(
+        grpc.ChainUnaryInterceptor(
+            logging.UnaryServerInterceptor(interceptorLogger(logger), opts...),
+        ),
+    )
 
-	var pbProducts []*pb.Product
-	for _, product := range products {
-		pbProducts = append(pbProducts, &pb.Product{
-			Id:             product.ProductID,
-			Name:           product.Name,
-			Description:    product.Description,
-			Price:          product.Price,
-			AvailableStock: product.AvailableStock,
-		})
-	}
+    pb.RegisterProductServiceServer(s, productService)
+    reflection.Register(s)
 
-	return &pb.ListProductsResponse{Products: pbProducts}, nil
+    logger.Info().Msgf("Product Service (gRPC) listening on %s", grpcPort)
+    if err := s.Serve(lis); err != nil {
+        logger.Fatal().Err(err).Msg("Product Server: Failed to serve gRPC")
+    }
 }
