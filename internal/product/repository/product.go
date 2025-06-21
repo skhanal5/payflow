@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/skhanal5/payflow/internal/shared"
+	"github.com/skhanal5/payflow/internal/shared/db"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -20,7 +20,7 @@ type ProductDB struct {
 }
 
 func NewProductDB(host string, user string, password string, port string) *ProductDB {
-	dsn := shared.DefineGormDSN(host, user, password, port)
+	dsn := db.DefineGormDSN(host, user, password, port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		//TODO: Add error message

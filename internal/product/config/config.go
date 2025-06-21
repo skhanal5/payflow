@@ -1,6 +1,6 @@
 package config
 
-import "github.com/skhanal5/payflow/internal/shared"
+import "github.com/skhanal5/payflow/internal/shared/env"
 
 type Config struct {
 	KafkaBroker           string
@@ -17,14 +17,14 @@ type Config struct {
 
 func NewConfig() Config {
 	return Config{
-		KafkaBroker:           shared.GetEnvOrPanic("KAFKA_BROKER"),
-		KafkaGroupId:          shared.GetEnvOrPanic("KAFKA_GROUPID"),
-		OrderRequestedTopic:   shared.GetEnvOrPanic("ORDER_REQUESTED_TOPIC"),
-		InventoryCheckedTopic: shared.GetEnvOrPanic("INVENTORY_CHECKED_TOPIC"),
-		DBHost:                shared.GetEnvOrPanic("INVENTORY_DB_HOST"),
-		DBUser:                shared.GetEnvOrPanic("INVENTORY_DB_USERNAME"),
-		DBPassword:            shared.GetEnvOrPanic("INVENTORY_DB_PASSWORD"),
-		DBPort:                shared.GetEnvOrPanic("INVENTORY_DB_PORT"),
-		Environment:           shared.GetEnvOrPanic("ENVIRONMENT"),
+		KafkaBroker:           env.GetEnvOrPanic("KAFKA_BROKER"),
+		KafkaGroupId:          env.GetEnvOrPanic("KAFKA_GROUPID"),
+		OrderRequestedTopic:   env.GetEnvOrPanic("ORDER_REQUESTED_TOPIC"),
+		InventoryCheckedTopic: env.GetEnvOrPanic("INVENTORY_CHECKED_TOPIC"),
+		DBHost:                env.GetEnvOrPanic("INVENTORY_DB_HOST"),
+		DBUser:                env.GetEnvOrPanic("INVENTORY_DB_USERNAME"),
+		DBPassword:            env.GetEnvOrPanic("INVENTORY_DB_PASSWORD"),
+		DBPort:                env.GetEnvOrPanic("INVENTORY_DB_PORT"),
+		Environment:           env.GetEnvOrPanic("ENVIRONMENT"),
 	}
 }

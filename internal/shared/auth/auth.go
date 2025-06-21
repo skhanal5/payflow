@@ -1,7 +1,5 @@
 package auth
 
-// payflow/internal/common/auth/claims.go
-
 import (
 	"context"
 
