@@ -3,8 +3,7 @@ module github.com/skhanal5/payflow
 go 1.24.1
 
 require (
-	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/grpc-ecosystem/go-grpc-middleware/providers/zerolog/v2 v2.0.0-rc.3
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.2
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.0
 	github.com/rs/zerolog v1.34.0
