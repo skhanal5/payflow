@@ -1,0 +1,44 @@
+package router
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/rs/zerolog"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
+	productgw "github.com/skhanal5/payflow/gen/go/product"
+	
+	"github.com/skhanal5/payflow/internal/apigateway/handler"
+)
+
+func NewRouter(ctx context.Context, logger zerolog.Logger, productAddr string) (http.Handler, error) {
+	gwmux := runtime.NewServeMux() 
+
+	dialOpts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
+
+	err := productgw.RegisterProductServiceHandlerFromEndpoint(
+		ctx,
+		gwmux,
+		productAddr,
+		dialOpts,
+	)
+	if err != nil {
+		logger.Error().Err(err).Msgf("Failed to register product service gateway handler from endpoint %s", productAddr)
+		return nil, fmt.Errorf("failed to register product service gateway: %w", err)
+	}
+	logger.Info().Msg("Registered product service gateway handler")
+
+	mainMux := http.NewServeMux()
+
+	mainMux.HandleFunc("/health", handler.GetHealth)
+
+	mainMux.Handle("/", gwmux)
+
+	return mainMux, nil
+}
