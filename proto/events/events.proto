@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package events;
+option go_package = "github.com/skhanal5/payflow/gen/go/events";
+
+message OrderItem {
+  string product_id = 1;
+  double price = 2;
+  int32 quantity = 3;
+}
+
+message OrderPlacedEvent {
+  string order_id = 1;
+  string user_id = 2;
+  repeated OrderItem items = 3;
+  string shipping_address = 4;
+}
+
+message InventoryCheckedEvent {
+  string order_id = 1;
+  string product_id = 2;
+  int32 quantity = 3;
+  bool success = 4;
+  string reason = 5;
+}
