@@ -21,11 +21,11 @@ restart-db:
 
 order-service:
 	mkdir -p bin
-	export $$(cat .env | xargs) && go build -o bin/order-service ./cmd/payflow/order_service/main.go
+	export $$(cat .env | xargs) && go build -o bin/order-service ./cmd/payflow/order/main.go
 
 inventory-service:
 	mkdir -p bin
-	export $$(cat .env | xargs) && go build -o bin/inventory-service ./cmd/payflow/inventory_service
+	export $$(cat .env | xargs) && go build -o bin/inventory-service ./cmd/payflow/product/main.go
 
 ps:
 	docker-compose ps
