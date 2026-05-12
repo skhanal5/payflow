@@ -12,20 +12,24 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/skhanal5/payflow/gen/go/events"
 	pb "github.com/skhanal5/payflow/gen/go/order"
+	"github.com/skhanal5/payflow/internal/order/kafka"
 	"github.com/skhanal5/payflow/internal/order/repository"
 )
 
 type OrderService struct {
 	pb.UnimplementedOrderServiceServer
-	repo   repository.OrderRepository
-	logger *zerolog.Logger
+	repo     repository.OrderRepository
+	producer kafka.OrderProducer
+	logger   *zerolog.Logger
 }
 
-func NewOrderService(repo repository.OrderRepository, logger *zerolog.Logger) *OrderService {
+func NewOrderService(repo repository.OrderRepository, producer kafka.OrderProducer, logger *zerolog.Logger) *OrderService {
 	return &OrderService{
-		repo:   repo,
-		logger: logger,
+		repo:     repo,
+		producer: producer,
+		logger:   logger,
 	}
 }
 
@@ -58,6 +62,24 @@ func (s *OrderService) CreateOrder(ctx context.Context, req *pb.CreateOrderReque
 		s.logger.Error().Err(err).Msg("Failed to insert order")
 		return nil, status.Errorf(codes.Internal, "failed to create order: %v", err)
 	}
+
+	go func() {
+		event := &events.OrderPlacedEvent{
+			OrderId:         id,
+			UserId:          req.UserId,
+			ShippingAddress: req.ShippingAddress,
+		}
+		for _, item := range req.Items {
+			event.Items = append(event.Items, &events.OrderItem{
+				ProductId: item.ProductId,
+				Price:     item.Price,
+				Quantity:  item.Quantity,
+			})
+		}
+		if err := s.producer.SendOrderPlaced(context.Background(), event); err != nil {
+			s.logger.Error().Err(err).Str("order_id", id).Msg("Failed to emit OrderPlacedEvent")
+		}
+	}()
 
 	return toProtoOrder(created), nil
 }
