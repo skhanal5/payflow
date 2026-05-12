@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = "github.com/skhanal5/payflow/gen/go/product";
+
+import "google/api/annotations.proto";
+
+message Product {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  int32  available_stock = 5;
+}
+
+message GetProductRequest {
+  string id = 1;
+}
+
+message ListProductsRequest {
+  string category = 1;
+}
+
+message ListProductsResponse {
+  repeated Product products = 1;    
+}
+
+service ProductService {
+  rpc GetProduct(GetProductRequest) returns (Product) {
+    option (google.api.http) = {
+      get: "/api/products/{id}"
+    };
+  }
+  rpc ListProducts(ListProductsRequest) returns (ListProductsResponse) {
+    option (google.api.http) = {
+      get: "/api/products"
+    };
+  }
+}

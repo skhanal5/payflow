@@ -6,7 +6,7 @@ type Order struct {
 	gorm.Model
 	OrderId    string      `gorm:"unique;not null"`
 	Status     string      `gorm:"not null"`
-	OrderItems []OrderItem `gorm:"forignKey:OrderId"`
+	OrderItems []OrderItem `gorm:"foreignKey:OrderId"`
 }
 
 type OrderItem struct {

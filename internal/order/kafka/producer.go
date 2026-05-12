@@ -22,7 +22,7 @@ type OrderWriter struct {
 func NewOrderWriter(cfg config.Config, logger *zerolog.Logger) *OrderWriter {
 	w := &kafkaclient.Writer{
 		Addr:     kafkaclient.TCP(cfg.KafkaBroker),
-		Topic:    cfg.OrderTopic,
+		Topic:    cfg.OrderRequestedTopic,
 		Balancer: &kafkaclient.LeastBytes{},
 	}
 	return &OrderWriter{
