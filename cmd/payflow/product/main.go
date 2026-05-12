@@ -12,7 +12,7 @@ import (
 
 func main() {
 	cfg := config.NewConfig()
-	db := repository.NewProductDB(cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBPassword)
+	db := repository.NewProductDB(cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBPort)
 	reader := kafkaclient.NewReader(kafkaclient.ReaderConfig{
 		Brokers: []string{cfg.KafkaBroker},
 		GroupID: cfg.KafkaGroupId,
