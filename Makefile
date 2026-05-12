@@ -1,8 +1,17 @@
-.PHONY: fmt clean rund restart restart-db order-service inventory-service ps help
+.PHONY: fmt vet lint build clean rund restart restart-db inventory-service ps help
 
 fmt: 
 	go fmt ./...
 	
+vet:
+	go vet ./...
+	
+lint:
+	PATH="$$(go env GOPATH)/bin:$$PATH" golangci-lint run ./...
+
+build:
+	go build ./...
+
 clean:
 	docker compose down -v
 	docker network prune -f
@@ -18,10 +27,6 @@ restart:
 restart-db:
 	docker restart order-db
 	docker restart inventory-db
-
-order-service:
-	mkdir -p bin
-	export $$(cat .env | xargs) && go build -o bin/order-service ./cmd/payflow/order/main.go
 
 inventory-service:
 	mkdir -p bin
