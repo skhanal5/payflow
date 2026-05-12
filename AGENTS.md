@@ -7,8 +7,8 @@ Go monorepo for a transaction processing system: 2 gRPC services + HTTP API gate
 | Service | File | Status |
 |---|---|---|
 | API gateway (HTTP) | `cmd/payflow/apigateway/main.go` | Active — grpc-gateway proxying REST→gRPC, JWT auth middleware, `/health` endpoint |
-| Product (gRPC) | `cmd/payflow/product/main.go` | Active — product catalog gRPC server + Kafka consumer (reads order events) |
-| Order (gRPC) | `cmd/payflow/order/main.go` | **Fully commented out** — order server disabled, but `internal/order/{handler,repository}` still used as library |
+| Product (gRPC) | `cmd/payflow/product/main.go` | Active — product catalog gRPC server, authz interceptor |
+| Order (gRPC) | `cmd/payflow/order/main.go` | Deleted — entrypoint was commented out; `internal/order/{config,repository}` still compiled as library |
 
 ## Infrastructure (Docker Compose)
 
@@ -33,11 +33,13 @@ No Flyway — schema is applied via `docker-entrypoint-initdb.d` scripts baked i
 | Command | What it does |
 |---|---|
 | `make fmt` | `go fmt ./...` |
+| `make vet` | `go vet ./...` |
+| `make lint` | `golangci-lint run ./...` (requires `golangci-lint` installed) |
+| `make build` | `go build ./...` |
 | `make rund` | `docker compose down -v` + prune + `up --build -d` (destroys volumes) |
 | `make restart` | `docker compose down` + `up -d` (preserves volumes) |
 | `make restart-db` | `docker restart order-db inventory-db` |
-
-`make order-service` and `make inventory-service` exist but reference deleted directories — use `go build ./cmd/payflow/...` instead.
+| `make inventory-service` | Builds product service binary with env vars from `.env` |
 
 No test targets, no CI, no proto codegen target (generated files are checked in).
 
@@ -47,7 +49,7 @@ No test targets, no CI, no proto codegen target (generated files are checked in)
 
 **Order service**: `ORDER_REQUESTED_TOPIC`, `INVENTORY_CHECKED_TOPIC`, `ORDER_DB_HOST`, `ORDER_DB_USER`, `ORDER_DB_PASSWORD`, `ORDER_DB_PORT`
 
-**Product service**: `ORDER_REQUESTED_TOPIC`, `INVENTORY_CHECKED_TOPIC`, `INVENTORY_DB_HOST`, `INVENTORY_DB_USERNAME`, `INVENTORY_DB_PASSWORD`, `INVENTORY_DB_PORT`
+**Product service**: `ORDER_REQUESTED_TOPIC`, `INVENTORY_CHECKED_TOPIC`, `INVENTORY_DB_HOST`, `INVENTORY_DB_USERNAME`, `INVENTORY_DB_PASSWORD`, `INVENTORY_DB_PORT`, `PRODUCT_GRPC_PORT`
 
 **API gateway**: `APIGATEWAY_PORT`, `ORDER_SERVICE`, `PRODUCT_SERVICE`, `JWT_SECRET_KEY`
 
