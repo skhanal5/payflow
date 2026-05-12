@@ -36,7 +36,7 @@ func (o *OrderDB) InsertOrder(ctx context.Context, order *Order) (*Order, error)
 
 func (o *OrderDB) GetOrder(ctx context.Context, orderID string) (*Order, error) {
 	var order Order
-	err := o.conn.WithContext(ctx).Model(&Order{}).Preload("CreditCards").Find(&order).Error
+	err := o.conn.WithContext(ctx).Model(&Order{}).Preload("OrderItems").Where("order_id = ?", orderID).First(&order).Error
 	if err != nil {
 		return nil, err
 	}
