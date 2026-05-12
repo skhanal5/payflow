@@ -6,7 +6,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-
 type contextKey string
 
 const (
@@ -18,7 +17,6 @@ type UserClaims struct {
 	Role   string `json:"role"` // e.g., "admin", "user", "guest"
 	jwt.RegisteredClaims
 }
-
 
 func GetUserClaimsFromContext(ctx context.Context) (*UserClaims, bool) {
 	claims, ok := ctx.Value(UserClaimsContextKey).(*UserClaims)
