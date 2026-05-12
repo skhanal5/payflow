@@ -13,10 +13,10 @@ import (
 )
 
 type InventoryProcessor struct {
-	reader        *kafkaclient.Reader
-	writer        *kafkaclient.Writer
-	repo          repository.ProductRepository
-	logger        *zerolog.Logger
+	reader *kafkaclient.Reader
+	writer *kafkaclient.Writer
+	repo   repository.ProductRepository
+	logger *zerolog.Logger
 }
 
 func NewInventoryProcessor(reader *kafkaclient.Reader, writer *kafkaclient.Writer, repo repository.ProductRepository, logger *zerolog.Logger) *InventoryProcessor {
