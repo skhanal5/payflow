@@ -1,0 +1,27 @@
+#!/bin/sh
+
+echo "Running pre-push checks..."
+
+echo "--- go fmt ---"
+make fmt
+if [ $? -ne 0 ]; then
+  echo "ERROR: go fmt failed. Fix formatting before pushing."
+  exit 1
+fi
+
+echo "--- go vet ---"
+make vet
+if [ $? -ne 0 ]; then
+  echo "ERROR: go vet failed. Fix issues before pushing."
+  exit 1
+fi
+
+echo "--- golangci-lint ---"
+make lint
+if [ $? -ne 0 ]; then
+  echo "ERROR: golangci-lint failed. Fix issues before pushing."
+  exit 1
+fi
+
+echo "All checks passed."
+exit 0
