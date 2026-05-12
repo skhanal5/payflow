@@ -6,12 +6,12 @@ type Config struct {
 	KafkaBroker           string
 	KafkaGroupId          string
 	OrderRequestedTopic   string
-	PaymentTopic          string
 	InventoryCheckedTopic string
 	DBHost                string
 	DBUser                string
 	DBPassword            string
 	DBPort                string
+	GRPCPort              string
 	Environment           string
 }
 
@@ -25,6 +25,7 @@ func NewConfig() Config {
 		DBUser:                env.GetEnvOrPanic("ORDER_DB_USER"),
 		DBPassword:            env.GetEnvOrPanic("ORDER_DB_PASSWORD"),
 		DBPort:                env.GetEnvOrPanic("ORDER_DB_PORT"),
+		GRPCPort:              env.GetEnvOrPanic("ORDER_GRPC_PORT"),
 		Environment:           env.GetEnvOrPanic("ENVIRONMENT"),
 	}
 }
