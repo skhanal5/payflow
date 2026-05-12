@@ -54,7 +54,7 @@ func (p *ProductDB) ListProducts(ctx context.Context, category *string) ([]*Prod
 func (p *ProductDB) UpdateProduct(ctx context.Context, productID string, quantity int32) (*Product, error) {
 	err := p.conn.Transaction(func(tx *gorm.DB) error {
 		var product Product
-		err := tx.Model(product).Where("product_id = ?", productID).Error
+		err := tx.Model(&product).Where("product_id = ?", productID).Error
 		if err != nil {
 			return fmt.Errorf("failed to find product %s: %w", productID, err)
 		}
