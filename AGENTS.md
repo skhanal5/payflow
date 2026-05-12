@@ -43,6 +43,8 @@ No Flyway — schema is applied via `docker-entrypoint-initdb.d` scripts baked i
 
 No test targets, no CI, no proto codegen target (generated files are checked in).
 
+After cloning, run `git config core.hooksPath githooks` to enable the pre-push hook (runs `fmt` → `vet` → `lint` before each push).
+
 ## Required env vars (all panic if missing)
 
 **Shared**: `KAFKA_BROKER`, `KAFKA_GROUPID`, `ENVIRONMENT`
