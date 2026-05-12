@@ -7,11 +7,11 @@ type Config struct {
 	KafkaGroupId          string
 	OrderRequestedTopic   string
 	InventoryCheckedTopic string
-	FailureTopic          string
 	DBHost                string
 	DBUser                string
 	DBPassword            string
 	DBPort                string
+	GRPCPort              string
 	Environment           string
 }
 
@@ -25,6 +25,7 @@ func NewConfig() Config {
 		DBUser:                env.GetEnvOrPanic("INVENTORY_DB_USERNAME"),
 		DBPassword:            env.GetEnvOrPanic("INVENTORY_DB_PASSWORD"),
 		DBPort:                env.GetEnvOrPanic("INVENTORY_DB_PORT"),
+		GRPCPort:              env.GetEnvOrPanic("PRODUCT_GRPC_PORT"),
 		Environment:           env.GetEnvOrPanic("ENVIRONMENT"),
 	}
 }
