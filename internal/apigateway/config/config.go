@@ -12,7 +12,7 @@ type Config struct {
 
 func NewConfig() Config {
 	return Config{
-		Environment:    env.GetEnvOrPanic("ENVIRONMETN"),
+		Environment:    env.GetEnvOrPanic("ENVIRONMENT"),
 		Port:           env.GetEnvOrPanic("APIGATEWAY_PORT"),
 		OrderService:   env.GetEnvOrPanic("ORDER_SERVICE"),
 		ProductService: env.GetEnvOrPanic("PRODUCT_SERVICE"),
