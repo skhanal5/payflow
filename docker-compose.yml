@@ -62,6 +62,63 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 8080:8080
+  product:
+    container_name: product
+    build:
+      context: .
+      dockerfile: cmd/payflow/product/Dockerfile
+    restart: always
+    depends_on:
+      - inventory-db
+      - broker
+    environment:
+      KAFKA_BROKER: broker:9092
+      KAFKA_GROUPID: payflow-group
+      ORDER_REQUESTED_TOPIC: order.requested
+      INVENTORY_CHECKED_TOPIC: inventory.checked
+      INVENTORY_DB_HOST: inventory-db
+      INVENTORY_DB_USERNAME: ${DB_USER}
+      INVENTORY_DB_PASSWORD: ${DB_PASSWORD}
+      INVENTORY_DB_PORT: "5432"
+      PRODUCT_GRPC_PORT: :50052
+      ENVIRONMENT: development
+  order:
+    container_name: order
+    build:
+      context: .
+      dockerfile: cmd/payflow/order/Dockerfile
+    restart: always
+    depends_on:
+      - order-db
+      - broker
+    environment:
+      KAFKA_BROKER: broker:9092
+      KAFKA_GROUPID: payflow-group
+      ORDER_REQUESTED_TOPIC: order.requested
+      INVENTORY_CHECKED_TOPIC: inventory.checked
+      ORDER_DB_HOST: order-db
+      ORDER_DB_USER: ${DB_USER}
+      ORDER_DB_PASSWORD: ${DB_PASSWORD}
+      ORDER_DB_PORT: "5432"
+      ORDER_GRPC_PORT: :50051
+      ENVIRONMENT: development
+  apigateway:
+    container_name: apigateway
+    build:
+      context: .
+      dockerfile: cmd/payflow/apigateway/Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - order
+      - product
+    environment:
+      APIGATEWAY_PORT: :8080
+      ORDER_SERVICE: order:50051
+      PRODUCT_SERVICE: product:50052
+      JWT_SECRET_KEY: change-me
+      ENVIRONMENT: development
 volumes:
   orders-data:
   inventory-data:
