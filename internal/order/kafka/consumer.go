@@ -49,12 +49,17 @@ func (r *OrderReader) ProcessInventoryResults(ctx context.Context) error {
 		}
 
 		status := "CONFIRMED"
-		if !event.Success {
+		if !event.AllSucceeded {
 			status = "FAILED"
-			r.logger.Warn().
-				Str("order_id", event.OrderId).
-				Str("product_id", event.ProductId).
-				Msg("Inventory check failed")
+			for _, res := range event.Results {
+				if !res.Success {
+					r.logger.Warn().
+						Str("order_id", event.OrderId).
+						Str("product_id", res.ProductId).
+						Str("reason", res.Reason).
+						Msg("Item inventory check failed")
+				}
+			}
 		}
 
 		if err := r.repo.UpdateOrderStatus(ctx, event.OrderId, status); err != nil {

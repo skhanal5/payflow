@@ -149,20 +149,86 @@ func (x *OrderPlacedEvent) GetShippingAddress() string {
 	return ""
 }
 
+type ItemCheckResult struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	Quantity      int32                  `protobuf:"varint,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Success       bool                   `protobuf:"varint,3,opt,name=success,proto3" json:"success,omitempty"`
+	Reason        string                 `protobuf:"bytes,4,opt,name=reason,proto3" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ItemCheckResult) Reset() {
+	*x = ItemCheckResult{}
+	mi := &file_events_events_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ItemCheckResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ItemCheckResult) ProtoMessage() {}
+
+func (x *ItemCheckResult) ProtoReflect() protoreflect.Message {
+	mi := &file_events_events_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ItemCheckResult.ProtoReflect.Descriptor instead.
+func (*ItemCheckResult) Descriptor() ([]byte, []int) {
+	return file_events_events_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ItemCheckResult) GetProductId() string {
+	if x != nil {
+		return x.ProductId
+	}
+	return ""
+}
+
+func (x *ItemCheckResult) GetQuantity() int32 {
+	if x != nil {
+		return x.Quantity
+	}
+	return 0
+}
+
+func (x *ItemCheckResult) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *ItemCheckResult) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
 type InventoryCheckedEvent struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	OrderId       string                 `protobuf:"bytes,1,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
-	ProductId     string                 `protobuf:"bytes,2,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
-	Quantity      int32                  `protobuf:"varint,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	Success       bool                   `protobuf:"varint,4,opt,name=success,proto3" json:"success,omitempty"`
-	Reason        string                 `protobuf:"bytes,5,opt,name=reason,proto3" json:"reason,omitempty"`
+	AllSucceeded  bool                   `protobuf:"varint,2,opt,name=all_succeeded,json=allSucceeded,proto3" json:"all_succeeded,omitempty"`
+	Results       []*ItemCheckResult     `protobuf:"bytes,3,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *InventoryCheckedEvent) Reset() {
 	*x = InventoryCheckedEvent{}
-	mi := &file_events_events_proto_msgTypes[2]
+	mi := &file_events_events_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -174,7 +240,7 @@ func (x *InventoryCheckedEvent) String() string {
 func (*InventoryCheckedEvent) ProtoMessage() {}
 
 func (x *InventoryCheckedEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_events_events_proto_msgTypes[2]
+	mi := &file_events_events_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -187,7 +253,7 @@ func (x *InventoryCheckedEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InventoryCheckedEvent.ProtoReflect.Descriptor instead.
 func (*InventoryCheckedEvent) Descriptor() ([]byte, []int) {
-	return file_events_events_proto_rawDescGZIP(), []int{2}
+	return file_events_events_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *InventoryCheckedEvent) GetOrderId() string {
@@ -197,32 +263,18 @@ func (x *InventoryCheckedEvent) GetOrderId() string {
 	return ""
 }
 
-func (x *InventoryCheckedEvent) GetProductId() string {
+func (x *InventoryCheckedEvent) GetAllSucceeded() bool {
 	if x != nil {
-		return x.ProductId
-	}
-	return ""
-}
-
-func (x *InventoryCheckedEvent) GetQuantity() int32 {
-	if x != nil {
-		return x.Quantity
-	}
-	return 0
-}
-
-func (x *InventoryCheckedEvent) GetSuccess() bool {
-	if x != nil {
-		return x.Success
+		return x.AllSucceeded
 	}
 	return false
 }
 
-func (x *InventoryCheckedEvent) GetReason() string {
+func (x *InventoryCheckedEvent) GetResults() []*ItemCheckResult {
 	if x != nil {
-		return x.Reason
+		return x.Results
 	}
-	return ""
+	return nil
 }
 
 var File_events_events_proto protoreflect.FileDescriptor
@@ -239,14 +291,17 @@ const file_events_events_proto_rawDesc = "" +
 	"\border_id\x18\x01 \x01(\tR\aorderId\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12'\n" +
 	"\x05items\x18\x03 \x03(\v2\x11.events.OrderItemR\x05items\x12)\n" +
-	"\x10shipping_address\x18\x04 \x01(\tR\x0fshippingAddress\"\x9f\x01\n" +
-	"\x15InventoryCheckedEvent\x12\x19\n" +
-	"\border_id\x18\x01 \x01(\tR\aorderId\x12\x1d\n" +
+	"\x10shipping_address\x18\x04 \x01(\tR\x0fshippingAddress\"~\n" +
+	"\x0fItemCheckResult\x12\x1d\n" +
 	"\n" +
-	"product_id\x18\x02 \x01(\tR\tproductId\x12\x1a\n" +
-	"\bquantity\x18\x03 \x01(\x05R\bquantity\x12\x18\n" +
-	"\asuccess\x18\x04 \x01(\bR\asuccess\x12\x16\n" +
-	"\x06reason\x18\x05 \x01(\tR\x06reasonB+Z)github.com/skhanal5/payflow/gen/go/eventsb\x06proto3"
+	"product_id\x18\x01 \x01(\tR\tproductId\x12\x1a\n" +
+	"\bquantity\x18\x02 \x01(\x05R\bquantity\x12\x18\n" +
+	"\asuccess\x18\x03 \x01(\bR\asuccess\x12\x16\n" +
+	"\x06reason\x18\x04 \x01(\tR\x06reason\"\x8a\x01\n" +
+	"\x15InventoryCheckedEvent\x12\x19\n" +
+	"\border_id\x18\x01 \x01(\tR\aorderId\x12#\n" +
+	"\rall_succeeded\x18\x02 \x01(\bR\fallSucceeded\x121\n" +
+	"\aresults\x18\x03 \x03(\v2\x17.events.ItemCheckResultR\aresultsB+Z)github.com/skhanal5/payflow/gen/go/eventsb\x06proto3"
 
 var (
 	file_events_events_proto_rawDescOnce sync.Once
@@ -260,19 +315,21 @@ func file_events_events_proto_rawDescGZIP() []byte {
 	return file_events_events_proto_rawDescData
 }
 
-var file_events_events_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_events_events_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_events_events_proto_goTypes = []any{
 	(*OrderItem)(nil),             // 0: events.OrderItem
 	(*OrderPlacedEvent)(nil),      // 1: events.OrderPlacedEvent
-	(*InventoryCheckedEvent)(nil), // 2: events.InventoryCheckedEvent
+	(*ItemCheckResult)(nil),       // 2: events.ItemCheckResult
+	(*InventoryCheckedEvent)(nil), // 3: events.InventoryCheckedEvent
 }
 var file_events_events_proto_depIdxs = []int32{
 	0, // 0: events.OrderPlacedEvent.items:type_name -> events.OrderItem
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	2, // 1: events.InventoryCheckedEvent.results:type_name -> events.ItemCheckResult
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_events_events_proto_init() }
@@ -286,7 +343,7 @@ func file_events_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_events_events_proto_rawDesc), len(file_events_events_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

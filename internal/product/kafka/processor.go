@@ -47,6 +47,9 @@ func (p *InventoryProcessor) Start(ctx context.Context) error {
 }
 
 func (p *InventoryProcessor) processOrder(ctx context.Context, event *events.OrderPlacedEvent) {
+	allSucceeded := true
+	var results []*events.ItemCheckResult
+
 	for _, item := range event.Items {
 		success := true
 		reason := ""
@@ -61,17 +64,26 @@ func (p *InventoryProcessor) processOrder(ctx context.Context, event *events.Ord
 			reason = fmt.Sprintf("insufficient stock for product %s", item.ProductId)
 		}
 
-		p.emitResult(ctx, event.OrderId, item, success, reason)
+		if !success {
+			allSucceeded = false
+		}
+
+		results = append(results, &events.ItemCheckResult{
+			ProductId: item.ProductId,
+			Quantity:  item.Quantity,
+			Success:   success,
+			Reason:    reason,
+		})
 	}
+
+	p.emitOrderResult(ctx, event.OrderId, allSucceeded, results)
 }
 
-func (p *InventoryProcessor) emitResult(ctx context.Context, orderID string, item *events.OrderItem, success bool, reason string) {
+func (p *InventoryProcessor) emitOrderResult(ctx context.Context, orderID string, allSucceeded bool, results []*events.ItemCheckResult) {
 	result := &events.InventoryCheckedEvent{
-		OrderId:   orderID,
-		ProductId: item.ProductId,
-		Quantity:  item.Quantity,
-		Success:   success,
-		Reason:    reason,
+		OrderId:      orderID,
+		AllSucceeded: allSucceeded,
+		Results:      results,
 	}
 
 	value, err := proto.Marshal(result)
@@ -88,7 +100,6 @@ func (p *InventoryProcessor) emitResult(ctx context.Context, orderID string, ite
 	if err := p.writer.WriteMessages(ctx, message); err != nil {
 		p.logger.Error().Err(err).
 			Str("order_id", orderID).
-			Str("product_id", item.ProductId).
 			Msg("Failed to emit inventory check result")
 	}
 }
