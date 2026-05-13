@@ -7,8 +7,8 @@ Learning how to build a transaction processing system — Go monorepo with 2 gRP
 | Service | Entrypoint | Port |
 |---|---|---|
 | API gateway (HTTP) | `cmd/payflow/apigateway/main.go` | Configurable via `APIGATEWAY_PORT` |
-| Product (gRPC) | `cmd/payflow/product/main.go` | Configurable via `PRODUCT_GRPC_PORT` |
-| Order (gRPC) | — | gRPC server not yet implemented |
+| Product (gRPC + Kafka consumer) | `cmd/payflow/product/main.go` | Configurable via `PRODUCT_GRPC_PORT` |
+| Order (gRPC + Kafka producer/consumer) | `cmd/payflow/order/main.go` | Configurable via `ORDER_GRPC_PORT` |
 
 ### Infrastructure (Docker Compose)
 
@@ -17,6 +17,9 @@ Learning how to build a transaction processing system — Go monorepo with 2 gRP
 - **Kafka**: Apache Kafka 3.9.1 (KRaft, port 9092)
 - **pgAdmin**: Port 8888
 - **Dozzle**: Port 8080
+- **product**: gRPC server on port 50052, Kafka consumer
+- **order**: gRPC server on port 50051, Kafka producer/consumer
+- **apigateway**: HTTP server on port 8080, grpc-gateway proxying to product + order
 
 ### Environment Variables
 
@@ -41,6 +44,7 @@ ORDER_DB_HOST=localhost
 ORDER_DB_USER=root
 ORDER_DB_PASSWORD=changeme
 ORDER_DB_PORT=5432
+ORDER_GRPC_PORT=:50051
 
 # Product service
 INVENTORY_DB_HOST=localhost
@@ -59,12 +63,11 @@ JWT_SECRET_KEY=change-me
 ### Local Development
 
 ```sh
-# Start infrastructure
+# Build and start everything (infrastructure + Go services)
 make rund
 
-# Build and run a service
+# Or run a service natively for faster iteration
 go run ./cmd/payflow/product/main.go
-go run ./cmd/payflow/apigateway/main.go
 ```
 
 ### Git Hooks
