@@ -14,6 +14,8 @@ type OrderDB struct {
 type OrderRepository interface {
 	InsertOrder(ctx context.Context, order *Order) (*Order, error)
 	GetOrder(ctx context.Context, orderID string) (*Order, error)
+	ListOrdersByUser(ctx context.Context, userID string) ([]Order, error)
+	UpdateOrderStatus(ctx context.Context, orderID, status string) error
 }
 
 func NewOrderDB(host string, user string, password string, port string) *OrderDB {
@@ -41,4 +43,17 @@ func (o *OrderDB) GetOrder(ctx context.Context, orderID string) (*Order, error) 
 		return nil, err
 	}
 	return &order, nil
+}
+
+func (o *OrderDB) ListOrdersByUser(ctx context.Context, userID string) ([]Order, error) {
+	var orders []Order
+	err := o.conn.WithContext(ctx).Model(&Order{}).Preload("OrderItems").Where("user_id = ?", userID).Find(&orders).Error
+	if err != nil {
+		return nil, err
+	}
+	return orders, nil
+}
+
+func (o *OrderDB) UpdateOrderStatus(ctx context.Context, orderID, status string) error {
+	return o.conn.WithContext(ctx).Model(&Order{}).Where("order_id = ?", orderID).Update("status", status).Error
 }

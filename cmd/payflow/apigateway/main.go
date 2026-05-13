@@ -19,7 +19,7 @@ func main() {
 	logger := logger.InitLogger("apigateway", "development")
 	cfg := config.NewConfig()
 
-	httpHandler, err := router.NewRouter(ctx, logger, cfg.ProductService)
+	httpHandler, err := router.NewRouter(ctx, logger, cfg.ProductService, cfg.OrderService)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Failed to initialize API Gateway router")
 	}

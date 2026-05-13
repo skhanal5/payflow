@@ -10,12 +10,13 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	ordergw "github.com/skhanal5/payflow/gen/go/order"
 	productgw "github.com/skhanal5/payflow/gen/go/product"
 
 	"github.com/skhanal5/payflow/internal/apigateway/handler"
 )
 
-func NewRouter(ctx context.Context, logger zerolog.Logger, productAddr string) (http.Handler, error) {
+func NewRouter(ctx context.Context, logger zerolog.Logger, productAddr, orderAddr string) (http.Handler, error) {
 	gwmux := runtime.NewServeMux()
 
 	dialOpts := []grpc.DialOption{
@@ -33,6 +34,18 @@ func NewRouter(ctx context.Context, logger zerolog.Logger, productAddr string) (
 		return nil, fmt.Errorf("failed to register product service gateway: %w", err)
 	}
 	logger.Info().Msg("Registered product service gateway handler")
+
+	err = ordergw.RegisterOrderServiceHandlerFromEndpoint(
+		ctx,
+		gwmux,
+		orderAddr,
+		dialOpts,
+	)
+	if err != nil {
+		logger.Error().Err(err).Msgf("Failed to register order service gateway handler from endpoint %s", orderAddr)
+		return nil, fmt.Errorf("failed to register order service gateway: %w", err)
+	}
+	logger.Info().Msg("Registered order service gateway handler")
 
 	mainMux := http.NewServeMux()
 
