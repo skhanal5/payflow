@@ -1,4 +1,4 @@
-.PHONY: fmt vet lint build clean rund restart restart-db inventory-service ps help
+.PHONY: fmt vet lint build clean rund restart restart-db inventory-service frontend-install frontend-dev frontend-build ps help
 
 fmt: 
 	go fmt ./...
@@ -34,6 +34,15 @@ inventory-service:
 
 ps:
 	docker-compose ps
+
+frontend-install:
+	cd frontend && npm install
+
+frontend-dev:
+	cd frontend && npm run dev
+
+frontend-build:
+	cd frontend && npm run build
 
 help:
 	@echo "Available targets:"
