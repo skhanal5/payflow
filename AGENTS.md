@@ -5,10 +5,10 @@ Go monorepo for a transaction processing system: 2 gRPC services + HTTP API gate
 ## Entrypoints
 
 | Service | File | Status |
-|---|---|---|
+|---|---|---|---|
 | API gateway (HTTP) | `cmd/payflow/apigateway/main.go` | Active — grpc-gateway proxying REST→gRPC, JWT auth middleware, `/health` endpoint |
-| Product (gRPC) | `cmd/payflow/product/main.go` | Active — product catalog gRPC server, authz interceptor |
-| Order (gRPC) | `cmd/payflow/order/main.go` | Deleted — entrypoint was commented out; `internal/order/{config,repository}` still compiled as library |
+| Product (gRPC + Kafka consumer) | `cmd/payflow/product/main.go` | Active — product catalog gRPC server, authz interceptor, consumes order events via Kafka |
+| Order (gRPC + Kafka producer/consumer) | `cmd/payflow/order/main.go` | Active — order gRPC server, emits order events to Kafka, consumes inventory results |
 
 ## Infrastructure (Docker Compose)
 
@@ -16,6 +16,9 @@ Go monorepo for a transaction processing system: 2 gRPC services + HTTP API gate
 - **order-db**: Postgres 15 on port 5432, init from `sql/init_order.sql`
 - **inventory-db**: Postgres 15 on port 5433, init from `sql/init_inventory.sql`
 - **pgAdmin** on port 8888, **Dozzle** (logs) on port 8080
+- **product**: gRPC server on port 50052, Kafka consumer
+- **order**: gRPC server on port 50051, Kafka producer/consumer
+- **apigateway**: HTTP server on port 8080, grpc-gateway proxying to product + order
 
 No Flyway — schema is applied via `docker-entrypoint-initdb.d` scripts baked into the Postgres images.
 
@@ -49,7 +52,7 @@ After cloning, run `git config core.hooksPath githooks` to enable the pre-push h
 
 **Shared**: `KAFKA_BROKER`, `KAFKA_GROUPID`, `ENVIRONMENT`
 
-**Order service**: `ORDER_REQUESTED_TOPIC`, `INVENTORY_CHECKED_TOPIC`, `ORDER_DB_HOST`, `ORDER_DB_USER`, `ORDER_DB_PASSWORD`, `ORDER_DB_PORT`
+**Order service**: `ORDER_REQUESTED_TOPIC`, `INVENTORY_CHECKED_TOPIC`, `ORDER_DB_HOST`, `ORDER_DB_USER`, `ORDER_DB_PASSWORD`, `ORDER_DB_PORT`, `ORDER_GRPC_PORT`
 
 **Product service**: `ORDER_REQUESTED_TOPIC`, `INVENTORY_CHECKED_TOPIC`, `INVENTORY_DB_HOST`, `INVENTORY_DB_USERNAME`, `INVENTORY_DB_PASSWORD`, `INVENTORY_DB_PORT`, `PRODUCT_GRPC_PORT`
 
