@@ -3,12 +3,12 @@ package config
 import "github.com/skhanal5/payflow/internal/shared/env"
 
 type Config struct {
-	DBHost     string
-	DBUser     string
-	DBPassword string
-	DBPort     string
-	GRPCPort   string
-	JWTSecret  string
+	DBHost      string
+	DBUser      string
+	DBPassword  string
+	DBPort      string
+	GRPCPort    string
+	JWTSecret   string
 	Environment string
 }
 
