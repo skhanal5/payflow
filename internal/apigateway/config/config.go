@@ -7,6 +7,7 @@ type Config struct {
 	Port           string
 	OrderService   string
 	ProductService string
+	AuthService    string
 	JWTSecretKey   string
 }
 
@@ -16,6 +17,7 @@ func NewConfig() Config {
 		Port:           env.GetEnvOrPanic("APIGATEWAY_PORT"),
 		OrderService:   env.GetEnvOrPanic("ORDER_SERVICE"),
 		ProductService: env.GetEnvOrPanic("PRODUCT_SERVICE"),
+		AuthService:    env.GetEnvOrPanic("AUTH_SERVICE"),
 		JWTSecretKey:   env.GetEnvOrPanic("JWT_SECRET_KEY"),
 	}
 }

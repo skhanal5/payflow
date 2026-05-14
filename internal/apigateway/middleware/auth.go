@@ -13,9 +13,20 @@ import (
 	"github.com/skhanal5/payflow/internal/shared/auth"
 )
 
+var publicPaths = map[string]bool{
+	"/health":            true,
+	"/api/auth/login":    true,
+	"/api/auth/register": true,
+}
+
 func AuthMiddleware(logger zerolog.Logger, jwtSecret string) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if publicPaths[r.URL.Path] {
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
 				logger.Warn().Str("path", r.URL.Path).Msg("Missing Authorization header")
