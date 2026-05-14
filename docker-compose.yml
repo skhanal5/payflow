@@ -25,6 +25,19 @@ services:
     volumes:
       - inventory-data:/var/lib/postgresql/data
       - ./sql/init_inventory.sql:/docker-entrypoint-initdb.d/init_inventory.sql:ro
+  auth-db:
+    image: postgres:15
+    container_name: auth-db
+    restart: always
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_DB=auth
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - auth-data:/var/lib/postgresql/data
+      - ./sql/init_auth.sql:/docker-entrypoint-initdb.d/init_auth.sql:ro
   broker:
     image: apache/kafka:3.9.1
     container_name: broker
@@ -132,3 +145,4 @@ services:
 volumes:
   orders-data:
   inventory-data:
+  auth-data:
