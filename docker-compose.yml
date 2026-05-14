@@ -119,6 +119,16 @@ services:
       PRODUCT_SERVICE: product:50052
       JWT_SECRET_KEY: change-me
       ENVIRONMENT: development
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - apigateway
 volumes:
   orders-data:
   inventory-data:
