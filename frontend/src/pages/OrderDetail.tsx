@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getOrder } from '@/lib/api';
+import { getOrder, type OrderResponse } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 export default function OrderDetail() {
-  const { id } = useParams();
-  const [order, setOrder] = useState(null);
+  const { id } = useParams<{ id: string }>();
+  const [order, setOrder] = useState<OrderResponse | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (!id) return;
     getOrder(id)
       .then(setOrder)
-      .catch((err) => setError(err.message));
+      .catch((err: Error) => setError(err.message));
   }, [id]);
 
   if (error) {
@@ -33,7 +34,7 @@ export default function OrderDetail() {
 
   const statusVariant = order.status === 'CONFIRMED' ? 'default'
     : order.status === 'FAILED' ? 'destructive'
-    : 'secondary';
+    : ('secondary' as const);
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-6">

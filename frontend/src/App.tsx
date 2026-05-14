@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Catalog from '@/pages/Catalog';
@@ -6,13 +7,13 @@ import OrderDetail from '@/pages/OrderDetail';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children }: { children: ReactNode }) {
   const token = localStorage.getItem('token');
   if (!token) return <Navigate to="/login" replace />;
   return children;
 }
 
-function Layout({ children }) {
+function Layout({ children }: { children: ReactNode }) {
   const token = localStorage.getItem('token');
   return (
     <div>

@@ -2,11 +2,11 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Card({
-  className,
-  size = "default",
-  ...props
-}) {
+interface CardProps extends React.ComponentPropsWithoutRef<"div"> {
+  size?: "default" | "sm"
+}
+
+function Card({ className, size = "default", ...props }: CardProps) {
   return (
     <div
       data-slot="card"
@@ -19,10 +19,7 @@ function Card({
   );
 }
 
-function CardHeader({
-  className,
-  ...props
-}) {
+function CardHeader({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
   return (
     <div
       data-slot="card-header"
@@ -34,10 +31,7 @@ function CardHeader({
   );
 }
 
-function CardTitle({
-  className,
-  ...props
-}) {
+function CardTitle({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
   return (
     <div
       data-slot="card-title"
@@ -49,10 +43,7 @@ function CardTitle({
   );
 }
 
-function CardDescription({
-  className,
-  ...props
-}) {
+function CardDescription({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
   return (
     <div
       data-slot="card-description"
@@ -61,10 +52,7 @@ function CardDescription({
   );
 }
 
-function CardAction({
-  className,
-  ...props
-}) {
+function CardAction({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
   return (
     <div
       data-slot="card-action"
@@ -76,10 +64,7 @@ function CardAction({
   );
 }
 
-function CardContent({
-  className,
-  ...props
-}) {
+function CardContent({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
   return (
     <div
       data-slot="card-content"
@@ -88,10 +73,7 @@ function CardContent({
   );
 }
 
-function CardFooter({
-  className,
-  ...props
-}) {
+function CardFooter({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
   return (
     <div
       data-slot="card-footer"

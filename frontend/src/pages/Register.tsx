@@ -1,24 +1,24 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login } from '@/lib/api';
+import { register } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function Login() {
+export default function Register() {
   const navigate = useNavigate();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
-      const data = await login(userId, password);
+      const data = await register(userId, password);
       localStorage.setItem('token', data.token);
       navigate('/');
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     }
   }
 
@@ -26,7 +26,7 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center">
       <Card className="w-96">
         <CardHeader>
-          <CardTitle>Login</CardTitle>
+          <CardTitle>Register</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -44,9 +44,9 @@ export default function Login() {
               required
             />
             {error && <p className="text-sm text-red-500">{error}</p>}
-            <Button type="submit" className="w-full">Login</Button>
+            <Button type="submit" className="w-full">Register</Button>
             <p className="text-sm text-center">
-              No account? <Link to="/register" className="underline">Register</Link>
+              Already have an account? <Link to="/login" className="underline">Login</Link>
             </p>
           </form>
         </CardContent>

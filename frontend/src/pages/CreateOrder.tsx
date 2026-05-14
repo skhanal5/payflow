@@ -1,40 +1,45 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { listProducts, createOrder } from '@/lib/api';
+import { listProducts, createOrder, type Product } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+interface OrderItem {
+  productId: string;
+  quantity: number;
+}
+
 export default function CreateOrder() {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [userId, setUserId] = useState('');
   const [shippingAddress, setShippingAddress] = useState('');
-  const [items, setItems] = useState([{ productId: '', quantity: 1 }]);
+  const [items, setItems] = useState<OrderItem[]>([{ productId: '', quantity: 1 }]);
   const [error, setError] = useState('');
 
   useEffect(() => {
     listProducts()
       .then((data) => setProducts(data.products || []))
-      .catch((err) => setError(err.message));
+      .catch((err: Error) => setError(err.message));
   }, []);
 
   function addItem() {
     setItems([...items, { productId: '', quantity: 1 }]);
   }
 
-  function updateItem(index, field, value) {
+  function updateItem(index: number, field: keyof OrderItem, value: string) {
     const next = [...items];
-    next[index][field] = value;
+    (next[index][field] as string | number) = field === 'quantity' ? Number(value) : value;
     setItems(next);
   }
 
-  function removeItem(index) {
+  function removeItem(index: number) {
     setItems(items.filter((_, i) => i !== index));
   }
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
       const orderItems = items.map((item) => ({
@@ -44,7 +49,7 @@ export default function CreateOrder() {
       const order = await createOrder(userId, orderItems, shippingAddress);
       navigate(`/orders/${order.id}`);
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     }
   }
 

@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { listProducts } from '@/lib/api';
+import { listProducts, type Product } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 export default function Catalog() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
     listProducts()
       .then((data) => setProducts(data.products || []))
-      .catch((err) => setError(err.message));
+      .catch((err: Error) => setError(err.message));
   }, []);
 
   if (error) {
