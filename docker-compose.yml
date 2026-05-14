@@ -115,6 +115,22 @@ services:
       ORDER_DB_PORT: "5432"
       ORDER_GRPC_PORT: :50051
       ENVIRONMENT: development
+  auth:
+    container_name: auth
+    build:
+      context: .
+      dockerfile: cmd/payflow/auth/Dockerfile
+    restart: always
+    depends_on:
+      - auth-db
+    environment:
+      AUTH_DB_HOST: auth-db
+      AUTH_DB_USER: ${DB_USER}
+      AUTH_DB_PASSWORD: ${DB_PASSWORD}
+      AUTH_DB_PORT: "5432"
+      AUTH_GRPC_PORT: :50053
+      JWT_SECRET_KEY: change-me
+      ENVIRONMENT: development
   apigateway:
     container_name: apigateway
     build:
@@ -126,10 +142,12 @@ services:
     depends_on:
       - order
       - product
+      - auth
     environment:
       APIGATEWAY_PORT: :8080
       ORDER_SERVICE: order:50051
       PRODUCT_SERVICE: product:50052
+      AUTH_SERVICE: auth:50053
       JWT_SECRET_KEY: change-me
       ENVIRONMENT: development
   frontend:
