@@ -9,16 +9,28 @@ import (
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 
 	authgw "github.com/skhanal5/payflow/gen/go/auth"
 	ordergw "github.com/skhanal5/payflow/gen/go/order"
 	productgw "github.com/skhanal5/payflow/gen/go/product"
 
 	"github.com/skhanal5/payflow/internal/apigateway/handler"
+	"github.com/skhanal5/payflow/internal/shared/auth"
 )
 
 func NewRouter(ctx context.Context, logger zerolog.Logger, productAddr, orderAddr, authAddr string) (http.Handler, error) {
-	gwmux := runtime.NewServeMux()
+	gwmux := runtime.NewServeMux(
+		runtime.WithMetadata(func(ctx context.Context, req *http.Request) metadata.MD {
+			if claims, ok := auth.GetUserClaimsFromContext(ctx); ok {
+				md, err := auth.ClaimsToMetadata(claims)
+				if err == nil {
+					return md
+				}
+			}
+			return metadata.MD{}
+		}),
+	)
 
 	dialOpts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
