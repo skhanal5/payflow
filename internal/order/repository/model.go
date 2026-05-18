@@ -8,7 +8,7 @@ type Order struct {
 	UserId          string      `gorm:"not null"`
 	Status          string      `gorm:"not null"`
 	ShippingAddress string      `gorm:"not null"`
-	OrderItems      []OrderItem `gorm:"foreignKey:OrderId"`
+	OrderItems      []OrderItem `gorm:"foreignKey:OrderId;references:OrderId"`
 }
 
 type OrderItem struct {
