@@ -15,15 +15,18 @@ import (
 type AuthzRules map[string][]string
 
 func NewAuthzRules() AuthzRules {
-	return AuthzRules{
-		"/product.ProductService/GetProduct":   {},
-		"/product.ProductService/ListProducts": {},
-	}
+	return AuthzRules{}
 }
 
 func AuthzInterceptor(logger zerolog.Logger, rules AuthzRules) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		logger.Debug().Str("method", info.FullMethod).Msg("Intercepting gRPC call for authorization")
+
+		requiredRoles, found := rules[info.FullMethod]
+		if !found {
+			logger.Debug().Str("method", info.FullMethod).Msg("Method not in authz rules. Allowing without authentication.")
+			return handler(ctx, req)
+		}
 
 		claims, ok := auth.GetUserClaimsFromContext(ctx)
 		if !ok {
@@ -33,9 +36,7 @@ func AuthzInterceptor(logger zerolog.Logger, rules AuthzRules) grpc.UnaryServerI
 
 		logger.Debug().Str("method", info.FullMethod).Str("userID", claims.UserID).Str("role", claims.Role).Msg("User claims found")
 
-		requiredRoles, found := rules[info.FullMethod]
-
-		if !found || len(requiredRoles) == 0 {
+		if len(requiredRoles) == 0 {
 			logger.Debug().Str("method", info.FullMethod).Msg("Method found in rules with no specific roles required. Allowing.")
 			return handler(ctx, req)
 		}

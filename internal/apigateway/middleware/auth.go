@@ -19,10 +19,17 @@ var publicPaths = map[string]bool{
 	"/api/auth/register": true,
 }
 
+func isPublicPath(path string) bool {
+	if publicPaths[path] {
+		return true
+	}
+	return strings.HasPrefix(path, "/api/products")
+}
+
 func AuthMiddleware(logger zerolog.Logger, jwtSecret string) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if publicPaths[r.URL.Path] {
+			if isPublicPath(r.URL.Path) {
 				next.ServeHTTP(w, r)
 				return
 			}
