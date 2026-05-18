@@ -12,6 +12,7 @@ message Product {
   string description = 3;
   double price = 4;
   int32  available_stock = 5;
+  string category = 6;
 }
 
 message GetProductRequest {

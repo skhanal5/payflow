@@ -29,6 +29,7 @@ func (p *ProductService) GetProduct(ctx context.Context, req *pb.GetProductReque
 		Description:    product.Description,
 		Price:          product.Price,
 		AvailableStock: product.AvailableStock,
+		Category:       product.Category,
 	}, nil
 }
 
@@ -50,6 +51,7 @@ func (p *ProductService) ListProducts(ctx context.Context, req *pb.ListProductsR
 			Description:    product.Description,
 			Price:          product.Price,
 			AvailableStock: product.AvailableStock,
+			Category:       product.Category,
 		})
 	}
 
