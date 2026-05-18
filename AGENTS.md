@@ -1,26 +1,29 @@
 # Payflow — Agent Guide
 
-Go monorepo: 2 gRPC services (order, product) + HTTP API gateway, Kafka async messaging, PostgreSQL, React frontend.
+Go monorepo: 3 gRPC services (order, product, auth) + HTTP API gateway, Kafka async messaging, PostgreSQL, React frontend.
 
 ## Entrypoints
 
 | Service | File | gRPC Port |
 |---|---|---|
 | API gateway (HTTP) | `cmd/payflow/apigateway/main.go` | N/A (HTTP on `APIGATEWAY_PORT`) |
+| Auth | `cmd/payflow/auth/main.go` | `AUTH_GRPC_PORT` |
 | Order | `cmd/payflow/order/main.go` | `ORDER_GRPC_PORT` |
 | Product | `cmd/payflow/product/main.go` | `PRODUCT_GRPC_PORT` |
 
 Order emits `order.requested` → Kafka, consumes `inventory.checked` from Kafka.
 Product consumes `order.requested` → Kafka, emits `inventory.checked` to Kafka.
+Auth handles login/register via gRPC (no Kafka).
 
 ## Infrastructure (Docker Compose)
 
 - **broker**: Kafka 3.9.1 single-node (KRaft, port 9092)
+- **auth-db**: Postgres 15 on port 5434, init from `sql/init_auth.sql`
 - **order-db**: Postgres 15 on port 5432, init from `sql/init_order.sql`
 - **inventory-db**: Postgres 15 on port 5433, init from `sql/init_inventory.sql`
-- **apigateway**: HTTP on host port 8080, proxies REST→gRPC to order + product
+- **apigateway**: HTTP on host port 8080, proxies REST→gRPC to auth + order + product
 - **frontend**: nginx serving SPA on host port 3000
-- **pgAdmin** on port 8888, **Dozzle** (logs) on port 8080 (note: port conflict with apigateway)
+- **pgAdmin** on port 8888, **Dozzle** (logs) on port 8081
 
 Schema applied via Postgres `docker-entrypoint-initdb.d` scripts — no Flyway.
 
@@ -67,4 +70,6 @@ Enables pre-push hook: `go fmt` → `go vet` → `golangci-lint`.
 
 **Product**: `ORDER_REQUESTED_TOPIC`, `INVENTORY_CHECKED_TOPIC`, `INVENTORY_DB_HOST`, `INVENTORY_DB_USERNAME`, `INVENTORY_DB_PASSWORD`, `INVENTORY_DB_PORT`, `PRODUCT_GRPC_PORT`
 
-**API gateway**: `APIGATEWAY_PORT`, `ORDER_SERVICE`, `PRODUCT_SERVICE`, `JWT_SECRET_KEY`
+**Auth**: `AUTH_DB_HOST`, `AUTH_DB_USER`, `AUTH_DB_PASSWORD`, `AUTH_DB_PORT`, `AUTH_GRPC_PORT`, `JWT_SECRET_KEY`
+
+**API gateway**: `APIGATEWAY_PORT`, `ORDER_SERVICE`, `PRODUCT_SERVICE`, `AUTH_SERVICE`, `JWT_SECRET_KEY`
