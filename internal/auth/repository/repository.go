@@ -18,7 +18,7 @@ type UserRepository interface {
 }
 
 func NewUserDB(host, user, password, port string) *UserDB {
-	dsn := db.DefineGormDSN(host, user, password, port)
+	dsn := db.DefineGormDSN(host, user, password, port, "auth")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect to auth database")

@@ -19,7 +19,7 @@ type OrderRepository interface {
 }
 
 func NewOrderDB(host string, user string, password string, port string) *OrderDB {
-	dsn := db.DefineGormDSN(host, user, password, port)
+	dsn := db.DefineGormDSN(host, user, password, port, "order")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
