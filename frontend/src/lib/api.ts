@@ -4,6 +4,7 @@ export interface Product {
   description: string
   price: number
   availableStock: number
+  category?: string
 }
 
 interface ProductsResponse {
