@@ -12,8 +12,9 @@ type contextKey string
 
 const (
 	UserClaimsContextKey contextKey = "userClaims"
-	ClaimsMetadataKey              = "x-user-claims"
 )
+
+const ClaimsMetadataKey = "x-user-claims"
 
 type UserClaims struct {
 	UserID string `json:"user_id"`
