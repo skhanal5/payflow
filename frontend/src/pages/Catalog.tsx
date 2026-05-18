@@ -80,8 +80,8 @@ export default function Catalog() {
               onClick={() => setSearchParams({})}
               className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
                 category === ALL_CATEGORIES
-                  ? 'bg-primary text-primary-foreground font-medium'
-                  : 'text-muted-foreground hover:bg-muted'
+                    ? 'bg-primary/10 text-primary font-medium'
+                    : 'text-muted-foreground hover:bg-primary/5 hover:text-primary'
               }`}
             >
               All Products
@@ -92,8 +92,8 @@ export default function Catalog() {
                 onClick={() => setSearchParams({ category: cat })}
                 className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
                   category === cat
-                    ? 'bg-primary text-primary-foreground font-medium'
-                    : 'text-muted-foreground hover:bg-muted'
+                    ? 'bg-primary/10 text-primary font-medium'
+                    : 'text-muted-foreground hover:bg-primary/5 hover:text-primary'
                 }`}
               >
                 {cat}
@@ -117,18 +117,18 @@ export default function Catalog() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((p) => (
-                <Card key={p.id} className="flex flex-col hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="w-full h-40 bg-gradient-to-br from-primary/5 to-accent/10 rounded-lg flex items-center justify-center mb-3">
+                <Card key={p.id} className="flex flex-col hover:shadow-lg hover:border-primary/30 transition-all">
+                  <CardHeader className="pb-0">
+                    <div className="w-full h-40 bg-gradient-to-br from-primary/5 to-accent/10 rounded-lg flex items-center justify-center">
                       <span className="text-4xl text-muted-foreground/30">
                         {p.name.charAt(0)}
                       </span>
                     </div>
-                    <CardTitle className="text-base">{p.name}</CardTitle>
-                    <p className="text-xs text-muted-foreground line-clamp-2">{p.description}</p>
                   </CardHeader>
-                  <CardContent className="flex-1">
-                    <div className="flex items-center justify-between">
+                  <CardContent className="flex-1 flex flex-col">
+                    <CardTitle className="text-base mt-3">{p.name}</CardTitle>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{p.description}</p>
+                    <div className="flex items-center justify-between mt-auto pt-3">
                       <span className="text-xl font-bold">${p.price?.toFixed(2)}</span>
                       <Badge variant={p.availableStock > 0 ? 'outline' : 'destructive'}>
                         {p.availableStock > 0 ? `${p.availableStock} in stock` : 'Out of stock'}
