@@ -27,13 +27,14 @@ restart:
 restart-db:
 	docker restart order-db
 	docker restart inventory-db
+	docker restart auth-db
 
 inventory-service:
 	mkdir -p bin
 	export $$(cat .env | xargs) && go build -o bin/inventory-service ./cmd/payflow/product/main.go
 
 ps:
-	docker-compose ps
+	docker compose ps
 
 frontend-install:
 	cd frontend && npm install
@@ -49,4 +50,4 @@ help:
 	@echo "  ps       - List the status of the containers"
 	@echo "  rund     - Remove and run the containers"
 	@echo "  restart  - Restart all containers"
-	@echo "  prune    - Remove containers, networks, and volumes"
+	@echo "  clean    - Remove containers, networks, and volumes"
